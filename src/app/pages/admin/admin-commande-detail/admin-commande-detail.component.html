@@ -1,0 +1,230 @@
+<section class="min-h-screen bg-gray-50 p-6" *ngIf="commande as c">
+
+  <!-- ================= HEADER ================= -->
+  <div class="flex flex-col lg:flex-row justify-between gap-6 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-blue-700">
+        Commande #{{ c.reference || c.id }}
+      </h1>
+      <p class="text-gray-500 mt-1">
+        {{ c.user?.name }} · {{ c.user?.email }} ·
+        {{ c.date_commande | date:'dd/MM/yyyy HH:mm' }}
+      </p>
+    </div>
+
+    <button
+      (click)="revenirAListe()"
+      class="px-5 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition"
+    >
+      ← Retour aux commandes
+    </button>
+  </div>
+
+  <!-- ================= TIMELINE ================= -->
+  <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+    <h2 class="font-semibold text-gray-800 mb-5">Progression de la commande</h2>
+
+    <div class="flex items-center justify-between">
+      <ng-container *ngFor="let step of ['en attente','confirmée','expédiée','livrée']; let i = index">
+        <div class="flex items-center w-full">
+          <div
+            class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold"
+            [ngClass]="{
+              'bg-orange-500': step === c.statut,
+              'bg-gray-300': step !== c.statut
+            }"
+          >
+            {{ i + 1 }}
+          </div>
+          <span class="ml-3 mr-6 text-sm capitalize text-gray-700">
+            {{ step }}
+          </span>
+          <div *ngIf="i < 3" class="flex-1 h-1 bg-gray-200 rounded"></div>
+        </div>
+      </ng-container>
+    </div>
+
+    <p class="mt-4 text-gray-600">
+      {{ getEtapeDescription(c.statut) }}
+    </p>
+  </div>
+
+  <!-- ================= GRID ================= -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- ===== INFOS CLIENT / LIVRAISON ===== -->
+    <div class="bg-white rounded-xl shadow-sm border p-6 space-y-5">
+      <h2 class="font-semibold text-blue-700 mb-2">Informations client & livraison</h2>
+
+      <!-- Bloc client -->
+      <div class="flex items-start gap-3 pb-4 border-b border-gray-100">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-700 font-semibold">
+          {{ (c.user?.name || 'C') | slice:0:1 | uppercase }}
+        </div>
+        <div class="flex-1">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900">{{ c.user?.name || c.livraison?.nom_client }}</p>
+              <p class="text-sm text-gray-500">{{ c.user?.email || 'Email non renseigné' }}</p>
+            </div>
+            <span class="text-xs rounded-full bg-blue-50 px-3 py-1 text-blue-700 font-semibold">
+              Client de la boutique
+            </span>
+          </div>
+          <p class="mt-2 text-sm text-gray-500" *ngIf="c.livraison?.telephone">
+            Téléphone : <span class="font-medium text-gray-700">{{ c.livraison?.telephone }}</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Bloc adresse de livraison -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">Adresse de livraison</span>
+          <span class="text-xs text-gray-400">Réf. #{{ c.reference || c.id }}</span>
+        </div>
+
+        <p class="text-sm text-gray-800">
+          {{ c.livraison?.adresse || 'Adresse non renseignée' }}
+        </p>
+        <p class="text-sm text-gray-500">
+          {{ c.livraison?.ville || 'Ville non renseignée' }}
+        </p>
+      </div>
+
+      <!-- Bloc livraison & notes -->
+      <div class="grid grid-cols-1 gap-3 text-sm text-gray-600">
+        <div class="flex justify-between">
+          <span class="text-gray-500">Mode de livraison</span>
+          <span class="font-medium text-gray-800">{{ c.mode_livraison || 'Standard / à définir' }}</span>
+        </div>
+
+        <div class="flex justify-between" *ngIf="c.livraison?.transporteur || c.livraison?.frais">
+          <span class="text-gray-500">Transporteur</span>
+          <span class="font-medium text-gray-800">
+            {{ c.livraison?.transporteur || '—' }}
+            <ng-container *ngIf="c.livraison?.frais">
+              · {{ c.livraison?.frais | number:'1.0-0' }} XOF
+            </ng-container>
+          </span>
+        </div>
+
+        <div class="flex justify-between">
+          <span class="text-gray-500">Statut livraison</span>
+          <span class="font-medium text-gray-800">
+            {{ c.livraison?.statut || 'En attente de création' }}
+          </span>
+        </div>
+
+        <div *ngIf="c.note_client || c.livraison?.instructions" class="pt-2 border-t border-gray-100">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">Notes client / instructions</p>
+          <p class="text-sm text-gray-700 whitespace-pre-line">
+            {{ c.note_client || c.livraison?.instructions }}
+          </p>
+        </div>
+
+        <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+          <span class="text-gray-500">Statut commande</span>
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold"
+            [ngClass]="{
+              'bg-orange-100 text-orange-700': c.statut === 'en attente',
+              'bg-blue-100 text-blue-700': c.statut === 'confirmée',
+              'bg-indigo-100 text-indigo-700': c.statut === 'expédiée',
+              'bg-emerald-100 text-emerald-700': c.statut === 'livrée',
+              'bg-red-100 text-red-700': c.statut === 'annulée'
+            }"
+          >
+            {{ getStatutLabel(c.statut) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== UPDATE STATUT ===== -->
+    <div class="bg-white rounded-xl shadow-sm border p-6 space-y-4">
+      <h2 class="font-semibold text-blue-700">Mise à jour du statut</h2>
+
+      <select
+        class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500"
+        [ngModel]="c.statut"
+        (ngModelChange)="onChangeStatus($event)"
+        [disabled]="isUpdatingStatus"
+      >
+        <option value="en attente">En attente</option>
+        <option value="confirmée">Confirmée</option>
+        <option value="expédiée">Expédiée</option>
+        <option value="livrée">Livrée</option>
+        <option value="annulée">Annulée</option>
+      </select>
+
+      <div *ngIf="isUpdatingStatus" class="text-sm text-blue-600">
+        Mise à jour en cours…
+      </div>
+    </div>
+
+    <!-- ===== RÉCAP TOTAL ===== -->
+    <div class="bg-white rounded-xl shadow-sm border p-6 space-y-4">
+      <h2 class="font-semibold text-blue-700">Résumé</h2>
+
+      <div class="flex justify-between text-gray-600">
+        <span>Sous-total</span>
+        <span>{{ getTotalLignes() | number:'1.0-0' }} XOF</span>
+      </div>
+
+      <div class="flex justify-between text-gray-600">
+        <span>Livraison</span>
+        <span>—</span>
+      </div>
+
+      <div class="border-t pt-4 flex justify-between text-lg font-bold text-blue-700">
+        <span>Total</span>
+        <span>{{ c.total | number:'1.0-0' }} XOF</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ARTICLES (STYLE PANIER) ================= -->
+  <div class="bg-white rounded-xl shadow-sm border p-6 mt-8">
+    <h2 class="font-semibold text-blue-700 mb-6">Produits commandés</h2>
+
+    <div class="space-y-4">
+      <div
+        *ngFor="let item of c.items"
+        class="flex gap-4 p-4 border rounded-lg hover:bg-gray-50 transition"
+      >
+        <img
+          [src]="item.produit.image
+            ? 'http://127.0.0.1:8000/storage/' + item.produit.image
+            : 'assets/images/no-image.jpg'"
+          class="w-20 h-20 object-cover rounded-lg border"
+        />
+
+        <div class="flex-1">
+          <h3 class="font-semibold text-gray-800">
+            {{ item.produit.nom }}
+          </h3>
+          <p class="text-sm text-gray-500">
+            Type : {{ item.produit.type }}
+          </p>
+          <p class="text-sm text-gray-500">
+            Prix unitaire : {{ item.prix_unitaire | number:'1.0-0' }} XOF
+          </p>
+        </div>
+
+        <div class="text-right space-y-1">
+          <p class="text-sm text-gray-500">Qté</p>
+          <p class="font-semibold">{{ item.quantite }}</p>
+        </div>
+
+        <div class="text-right space-y-1">
+          <p class="text-sm text-gray-500">Total</p>
+          <p class="font-bold text-orange-600">
+            {{ item.quantite * item.prix_unitaire | number:'1.0-0' }} XOF
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>

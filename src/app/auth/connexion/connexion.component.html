@@ -1,0 +1,63 @@
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-left">
+      <div class="overlay-pattern"></div>
+      <div class="content-wrapper">
+        <div class="brand-logo">
+          <span class="logo-dot"></span> Ahma-Dile
+        </div>
+        <h1>L'élégance du textile africain</h1>
+        <p>Connectez-vous pour accéder à nos collections exclusives de tissus wax, bazins et mercerie fine.</p>
+        <button type="button" class="learn-more-btn" (click)="goToHome()">
+          Retour à la boutique
+        </button>
+      </div>
+    </div>
+
+    <div class="login-right">
+      <div class="login-card">
+        <div class="login-header">
+          <h2>Bon retour !</h2>
+          <p>Heureux de vous revoir parmi nous</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+          <div class="form-group">
+            <label>Votre Email</label>
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              <input type="email" formControlName="email" placeholder="exemple@mail.com" class="form-input">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label>Mot de passe</label>
+              <a routerLink="/forgot-password" class="forgot-link">Oublié ?</a>
+            </div>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input type="password" formControlName="password" placeholder="••••••••" class="form-input">
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="form.invalid || isLoading">
+            <span *ngIf="!isLoading">Se connecter</span>
+            <div *ngIf="isLoading" class="spinner"></div>
+          </button>
+        </form>
+
+        <div class="divider"><span>ou continuer avec</span></div>
+
+        <button class="google-btn" (click)="onGoogleSignIn()">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/250px-Google_Favicon_2025.svg.png" alt="G">
+          Google
+        </button>
+
+        <p class="signup-footer">
+          Nouveau ici ? <a routerLink="/inscription">Créer un compte</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

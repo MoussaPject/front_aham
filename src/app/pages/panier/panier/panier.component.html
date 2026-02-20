@@ -1,0 +1,143 @@
+<div class="cart-page-wrapper">
+  <!-- Section d'espacement et de titre -->
+  <section class="cart-header-section">
+    <div class="container">
+      <h2 class="cart-page-title">🛒 Mon Panier</h2>
+    </div>
+  </section>
+
+  <div class="container main-cart-content">
+    <!-- Message si le panier est vide -->
+    <div *ngIf="panier.length === 0" class="empty-cart-state">
+      <i class="fas fa-shopping-basket fa-5x mb-4"></i>
+      <h4>Votre panier est vide.</h4>
+      <p>Il est temps de découvrir nos magnifiques tissus !</p>
+      <button class="btn-primary" routerLink="/produits">
+        <i class="fas fa-arrow-left"></i> Continuer mes achats
+      </button>
+    </div>
+
+    <!-- Contenu du panier si non vide -->
+    <div *ngIf="panier.length > 0" class="cart-content-grid">
+      <!-- Section des articles du panier -->
+      <div class="cart-items-list">
+        <div *ngFor="let item of panier; trackBy: trackByItemId" class="cart-item-card">
+          <div class="item-image">
+            <img
+              [src]="item.produit.image ? 'http://127.0.0.1:8000/storage/' + item.produit.image : 'assets/images/no-image.jpg'"
+              [alt]="item.produit.nom"
+              (error)="onImageError($event)"
+            />
+          </div>
+          <div class="item-details">
+            <h5 class="item-title">{{ item.produit.nom }}</h5>
+            <p class="item-price-unit">Prix unitaire: <strong>{{ formatPrice(item.produit.prix) }}</strong></p>
+
+            <div class="item-quantity-controls">
+              <button class="quantity-btn" (click)="decrementQuantity(item)">-</button>
+              <input
+                type="number"
+                [value]="item.quantite"
+                min="1"
+                [max]="item.produit.quantite"
+                (change)="updateQuantity(item, $event)"
+                class="quantity-input"
+              />
+              <button class="quantity-btn" (click)="incrementQuantity(item)">+</button>
+            </div>
+          </div>
+          <div class="item-actions">
+            <span class="item-subtotal">{{ formatPrice(item.produit.prix * item.quantite) }}</span>
+            <button class="btn-remove-item" (click)="supprimerItem(item.id)">
+              <i class="fas fa-trash-alt"></i> Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section du résumé du panier -->
+      <div class="cart-summary-card">
+        <h3>Résumé de la commande</h3>
+        <div class="summary-line">
+          <span>Sous-total:</span>
+          <span>{{ formatPrice(total) }}</span>
+        </div>
+        <div class="summary-line">
+          <span>Livraison estimée:</span>
+          <span>Gratuit</span> <!-- Placeholder, could be dynamic -->
+        </div>
+        <div class="summary-line total-line">
+          <span>Total:</span>
+          <span>{{ formatPrice(total) }}</span>
+        </div>
+
+        <div class="summary-buttons">
+          <button class="btn-checkout" (click)="passerCommande()">
+            <i class="fas fa-credit-card"></i> Passer la commande
+          </button>
+          <button class="btn-clear-cart" (click)="viderPanier()">
+            <i class="fas fa-trash"></i> Vider le panier
+          </button>
+          <button class="btn-continue-shopping" routerLink="/produits">
+            <i class="fas fa-arrow-left"></i> Continuer mes achats
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nouvelle Section: Informations supplémentaires sur la commande -->
+  <section class="order-info-section">
+    <div class="container">
+      <h2>Pourquoi commander chez nous ?</h2>
+      <p class="section-subtitle">
+        Profitez d'une expérience d'achat sécurisée et de services de qualité.
+      </p>
+      <div class="info-grid">
+        <div class="info-item-detail">
+          <i class="fas fa-shield-alt"></i>
+          <h3>Paiement sécurisé</h3>
+          <p>Vos transactions sont protégées par les dernières technologies de cryptage.</p>
+        </div>
+        <div class="info-item-detail">
+          <i class="fas fa-truck-fast"></i>
+          <h3>Livraison rapide</h3>
+          <p>Recevez vos commandes dans les plus brefs délais, partout au Sénégal.</p>
+        </div>
+        <div class="info-item-detail">
+          <i class="fas fa-headset"></i>
+          <h3>Support client</h3>
+          <p>Notre équipe est à votre écoute pour toute question ou assistance.</p>
+        </div>
+        <div class="info-item-detail">
+          <i class="fas fa-undo-alt"></i>
+          <h3>Retours faciles</h3>
+          <p>Politique de retour flexible si vous n'êtes pas entièrement satisfait.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modale de confirmation de commande améliorée -->
+  <div *ngIf="confirmationVisible" class="modal-overlay" (click)="closeConfirmationModal()">
+    <div class="order-confirmation-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close-btn" (click)="closeConfirmationModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-header-icon">
+        <i class="fas fa-check-circle modal-icon"></i>
+        <span class="emoji">🎉</span>
+      </div>
+      <h3 class="modal-title">Commande Confirmée !</h3>
+      <p class="modal-message">
+        Votre commande a été enregistrée avec succès. Un email de confirmation
+        avec les détails de votre achat vous sera envoyé sous peu.
+        <span class="emoji">📧</span>
+      </p>
+      <button class="btn-primary modal-action-btn" routerLink="/produits" (click)="closeConfirmationModal()">
+        <i class="fas fa-box"></i> Continuer mes achats
+      </button>
+    </div>
+  </div>
+
+</div>

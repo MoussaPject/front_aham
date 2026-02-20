@@ -1,0 +1,238 @@
+<section class="min-h-screen bg-slate-50 py-8 px-4 md:px-8">
+  <!-- Header principal -->
+  <div class="max-w-6xl mx-auto mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-blue-700 mb-1">Gestion des utilisateurs</h1>
+        <p class="text-slate-600 max-w-2xl">
+          Visualisez et administrez les comptes de votre boutique : rôles, activation, et gestion
+          des accès, dans une interface claire et agréable.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 bg-white rounded-xl shadow-sm px-4 py-3 border border-slate-100">
+        <div class="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
+          <span class="text-blue-600 text-xl font-semibold">{{ totalUsers }}</span>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-wide text-slate-400">Utilisateurs</p>
+          <p class="text-sm font-semibold text-slate-700">Comptes enregistrés</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto space-y-6">
+    <!-- Alertes et chargement -->
+    <div *ngIf="apiError" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ apiError }}
+    </div>
+
+    <div *ngIf="isLoading" class="flex items-center gap-2 text-slate-600">
+      <span class="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
+      <span>Chargement des utilisateurs...</span>
+    </div>
+
+    <!-- Cartes de synthèse -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-3 flex flex-col gap-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Total</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">
+            Tous rôles
+          </span>
+        </div>
+        <p class="text-2xl font-bold text-slate-800">{{ totalUsers }}</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-3 flex flex-col gap-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Actifs</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">
+            Comptes actifs
+          </span>
+        </div>
+        <p class="text-2xl font-bold text-emerald-600">{{ activeUsers }}</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-3 flex flex-col gap-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Admins</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">
+            Gestion
+          </span>
+        </div>
+        <p class="text-2xl font-bold text-blue-600">{{ adminCount }}</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-3 flex flex-col gap-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Clients</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-orange-50 text-orange-700">
+            Côté boutique
+          </span>
+        </div>
+        <p class="text-2xl font-bold text-orange-500">{{ clientCount }}</p>
+      </div>
+    </div>
+
+    <!-- Barre de filtres -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+      <div class="flex-1 flex items-center gap-2">
+        <div class="relative w-full">
+          <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">
+            🔍
+          </span>
+          <input
+            type="text"
+            class="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Rechercher par nom ou email..."
+            [(ngModel)]="searchTerm"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <select
+          class="text-sm rounded-lg border border-slate-200 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          [(ngModel)]="selectedRole"
+        >
+          <option value="all">Tous les rôles</option>
+          <option value="admin">Admins</option>
+          <option value="vendeur">Vendeurs</option>
+          <option value="client">Clients</option>
+        </select>
+
+        <label class="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            [(ngModel)]="showOnlyActive"
+          />
+          <span>Afficher uniquement les comptes actifs</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Tableau des utilisateurs -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="text-sm font-semibold text-slate-700">Liste des utilisateurs</h2>
+        <p class="text-xs text-slate-500">
+          {{ filteredUsers.length }} utilisateur(s) affiché(s)
+        </p>
+      </div>
+
+      <div *ngIf="!isLoading && filteredUsers.length; else emptyState">
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-slate-50">
+              <tr class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                <th class="px-4 py-3">ID</th>
+                <th class="px-4 py-3">Nom</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Rôle</th>
+                <th class="px-4 py-3">Statut</th>
+                <th class="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr *ngFor="let u of filteredUsers" class="hover:bg-slate-50/60">
+                <td class="px-4 py-3 text-slate-500">#{{ u.id }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-3">
+                    <div class="h-9 w-9 rounded-full overflow-hidden flex items-center justify-center text-white text-xs font-semibold shadow-sm">
+                      <img
+                        *ngIf="u.image; else userInitialAvatar"
+                        class="w-full h-full object-cover"
+                        [src]="'http://127.0.0.1:8000/storage/' + u.image"
+                        [alt]="'Photo de ' + u.name"
+                        (error)="u.image = null"
+                      />
+                    </div>
+                    <ng-template #userInitialAvatar>
+                      <div class="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-orange-400 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
+                        {{ u.name.charAt(0) | uppercase }}
+                      </div>
+                    </ng-template>
+                    <div>
+                      <p class="font-medium text-slate-800">{{ u.name }}</p>
+                      <p class="text-xs text-slate-500 truncate max-w-[200px]">{{ u.email }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 hidden lg:table-cell">
+                  <span class="inline-flex px-2 py-1 rounded-full bg-slate-50 text-[11px] font-medium text-slate-600">
+                    {{ u.email }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <select
+                    [ngModel]="u.role"
+                    (ngModelChange)="onRoleChange(u, $event)"
+                    class="text-xs rounded-lg border border-slate-200 px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="vendeur">Vendeur</option>
+                    <option value="client">Client</option>
+                  </select>
+                </td>
+                <td class="px-4 py-3">
+                  <button
+                    type="button"
+                    (click)="onToggleActive(u)"
+                    class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border transition
+                    "
+                    [ngClass]="u.active
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-slate-50 text-slate-500 border-slate-200'"
+                  >
+                    <span
+                      class="inline-block h-2 w-2 rounded-full"
+                      [ngClass]="u.active ? 'bg-emerald-500' : 'bg-slate-300'"
+                    ></span>
+                    <span>{{ u.active ? 'Actif' : 'Inactif' }}</span>
+                  </button>
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      (click)="goToDetail(u)"
+                      class="inline-flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1 text-xs font-medium border border-blue-100 transition"
+                    >
+                      <span>👁️</span>
+                      <span>Détails</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="onDelete(u)"
+                      class="inline-flex items-center gap-1 rounded-full bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1 text-xs font-medium border border-red-100 transition"
+                    >
+                      <span>🗑️</span>
+                      <span>Supprimer</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="px-6 py-10 flex flex-col items-center justify-center text-center gap-3">
+          <div class="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center mb-1">
+            <span class="text-2xl">👥</span>
+          </div>
+          <h3 class="text-base font-semibold text-slate-700">Aucun utilisateur à afficher</h3>
+          <p class="text-sm text-slate-500 max-w-md">
+            Ajustez les filtres ou la recherche pour retrouver un compte. Lorsque des utilisateurs seront
+            créés dans votre boutique, ils apparaîtront automatiquement ici.
+          </p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</section>

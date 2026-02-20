@@ -1,0 +1,43 @@
+****************************************************************************************
+This is a simple server for use in testing or debugging Angular applications locally.
+It hasn't been reviewed for security issues.
+
+DON'T USE IT FOR PRODUCTION!
+****************************************************************************************
+- Generating browser application bundles (phase: setup)...
+- Generating server application bundles (phase: setup)...
+✔ Server application bundle generation complete.
+
+Initial chunk files | Names         | Raw size
+main.js             | main          |  3.11 MB | 
+
+                    | Initial total |  3.11 MB
+
+Lazy chunk files    | Names         | Raw size
+327.js              | xhr2          | 15.02 kB | 
+
+Build at: 2026-02-20T16:11:40.080Z - Hash: 0e481f73eb069591 - Time: 12835ms
+- Generating index html...
+✔ Browser application bundle generation complete.
+✔ Index html generation complete.
+
+
+
+4 unchanged chunks
+
+Build at: 2026-02-20T16:11:45.186Z - Hash: 4226df896db1c50e - Time: 13826ms
+
+Warning: D:/ahma-dile-boutique/front-end/server.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: D:/ahma-dile-boutique/front-end/src/app/app.module.server.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+Warning: D:/ahma-dile-boutique/front-end/src/main.server.ts is part of the TypeScript compilation but it's unused.
+Add only entry points to the 'files' or 'include' properties in your tsconfig.
+
+
+
+Compiled successfully.
+✔ Browser application bundle generation complete.
+✔ Server application bundle generation complete.

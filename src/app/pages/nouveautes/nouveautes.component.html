@@ -1,0 +1,353 @@
+
+<div class="min-h-screen bg-white text-neutral-900 font-display">
+
+  <!-- HERO PRINCIPAL -->
+  <section class="max-w-7xl mx-auto px-6 pt-20">
+    <div class="relative rounded-[32px] overflow-hidden">
+      <img src="https://i.pinimg.com/736x/f8/71/8b/f8718bd954f5653a63778caebd92c4ba.jpg" class="w-full h-[520px] object-cover" />
+      <div class="absolute inset-0 bg-black/45"></div>
+
+      <div class="absolute inset-0 flex items-center">
+        <div class="px-16 max-w-2xl text-white space-y-6">
+          <h1 class="text-5xl font-bold leading-tight">COMMUNITY‑DRIVEN<br/>CULTURE</h1>
+          <p class="text-gray-200 text-lg">
+            Une sélection premium de tissus, bazins, wax et mercerie pensée pour les créateurs modernes.
+          </p>
+          <a routerLink="/produits" class="inline-flex items-center gap-3 px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gold transition">
+            Explorer la collection
+            <span>→</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- mini steps -->
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6 text-white text-xs">
+        <span class="opacity-60">01</span>
+        <span class="font-semibold">02</span>
+        <span class="opacity-60">03</span>
+        <span class="opacity-60">04</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW DROPS -->
+<!-- ========================= -->
+<!-- NEW DROPS PREMIUM SECTION -->
+<!-- ========================= -->
+<section class="max-w-7xl mx-auto px-6 py-24">
+
+  <!-- Header -->
+  <div class="mb-14 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+    <div>
+      <span class="inline-block mb-3 px-4 py-1 rounded-full 
+                   bg-gradient-to-r from-orange-500 to-pink-500 
+                   text-white text-xs font-semibold tracking-wide">
+        Nouveautés
+      </span>
+      <h2 class="text-3xl font-extrabold tracking-tight">New Drops</h2>
+      <p class="text-gray-500 mt-2 max-w-xl">
+        Dernières arrivées premium sélectionnées pour les créateurs modernes.
+      </p>
+    </div>
+
+    <a routerLink="/produits"
+       class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-orange-500 transition">
+      Voir toute la collection
+      <span class="text-lg">→</span>
+    </a>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" *ngIf="derniersProduits.length > 0">
+
+    <div *ngFor="let produit of derniersProduits"
+         class="group relative bg-white rounded-3xl overflow-hidden 
+                border border-gray-100 shadow-sm 
+                hover:shadow-2xl transition-all duration-500">
+
+      <!-- Glow effect -->
+      <div class="absolute -inset-1 bg-gradient-to-br from-orange-400/10 via-pink-400/10 to-purple-400/10 
+                  opacity-0 group-hover:opacity-100 blur-xl transition"></div>
+
+      <!-- Card body -->
+      <div class="relative">
+
+        <!-- Image -->
+        <div class="relative h-60 overflow-hidden">
+
+          <!-- Badges -->
+          <div class="absolute top-3 left-3 z-10 flex flex-col gap-2">
+            <span *ngIf="produit.prix_promo"
+                  class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wide 
+                         bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow">
+              PROMO
+            </span>
+
+            <span *ngIf="produit.quantite <= 5"
+                  class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wide 
+                         bg-black text-white shadow">
+              STOCK LIMITÉ
+            </span>
+          </div>
+
+          <img
+            [src]="getImageUrl(produit.image)"
+            class="w-full h-full object-cover transition duration-700 group-hover:scale-110"
+          />
+
+          <!-- Overlay hover -->
+          <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 
+                      transition flex items-center justify-center">
+
+            <div class="flex gap-3">
+              <a
+                [routerLink]="['/produit', produit.slug || produit.id]"
+                class="bg-white text-gray-900 text-xs font-semibold 
+                       px-5 py-2 rounded-full shadow 
+                       hover:bg-orange-500 hover:text-white transition">
+                Voir
+              </a>
+
+              <button
+                class="bg-orange-500 text-white text-xs font-semibold 
+                       px-5 py-2 rounded-full shadow 
+                       hover:bg-orange-600 transition">
+                + Panier
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-5 space-y-3">
+
+          <!-- Rating -->
+          <div class="flex items-center text-yellow-400 text-xs tracking-wide">
+            ★★★★★
+            <span class="ml-2 text-gray-400 text-[10px]">(premium)</span>
+          </div>
+
+          <!-- Title -->
+          <h3 class="font-semibold text-sm leading-snug line-clamp-2">
+            {{ produit.nom }}
+          </h3>
+
+          <!-- Meta -->
+          <p class="text-xs text-gray-400 uppercase tracking-wide">
+            {{ produit.type }}
+          </p>
+
+          <!-- Price -->
+          <div class="flex items-center gap-2 pt-1">
+            <span class="text-orange-500 font-bold text-base">
+              {{ formatPrice(produit.prix_promo || produit.prix) }}
+            </span>
+
+            <span *ngIf="produit.prix_promo"
+                  class="text-gray-400 text-sm line-through">
+              {{ formatPrice(produit.prix) }}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+  <!-- COLLECTIONS MISES EN AVANT -->
+  <section class="max-w-7xl mx-auto px-6 py-20 border-t border-orange-100 bg-orange-50 rounded-[32px]">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold tracking-wide">Collections mises en avant</h2>
+        <p class="text-gray-500 mt-2 max-w-xl">
+          Des univers pensés pour inspirer vos prochaines créations : cérémonies, tenues casual ou pièces d'exception.
+        </p>
+      </div>
+      <a routerLink="/categories" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800">
+        Voir toutes les catégories
+        <span class="text-base">→</span>
+      </a>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Carte collection 1 -->
+      <div class="relative h-64 rounded-3xl overflow-hidden group cursor-pointer bg-neutral-900">
+        <ng-container *ngIf="derniersProduits.length > 0; else collection1Fallback">
+          <img
+            [src]="derniersProduits[0].image ? 'http://127.0.0.1:8000/storage/' + derniersProduits[0].image : 'assets/images/no-image.jpg'"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </ng-container>
+        <ng-template #collection1Fallback>
+          <img src="https://i.pinimg.com/1200x/53/8b/d1/538bd1dcd5bacaf79d815a596f0739f5.jpg" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </ng-template>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <div class="absolute inset-0 flex items-end p-6">
+          <div class="space-y-2">
+            <span class="inline-flex px-3 py-1 rounded-full text-[11px] font-semibold bg-white/15 text-gray-100 tracking-wide">
+              CÉRÉMONIE
+            </span>
+            <h3 class="text-lg font-semibold text-white leading-tight">Wax Vibrant</h3>
+            <p class="text-xs text-gray-200 max-w-xs">
+              Des imprimés colorés pour des boubous et ensembles qui marquent les esprits.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carte collection 2 -->
+      <div class="relative h-64 rounded-3xl overflow-hidden group cursor-pointer bg-neutral-900">
+        <ng-container *ngIf="derniersProduits.length > 1; else collection2Fallback">
+          <img
+            [src]="derniersProduits[1].image ? 'http://127.0.0.1:8000/storage/' + derniersProduits[1].image : 'assets/images/no-image.jpg'"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </ng-container>
+        <ng-template #collection2Fallback>
+          <img src="https://i.pinimg.com/1200x/8c/70/1e/8c701eae82afa960c0170645c99d76c6.jpg" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </ng-template>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <div class="absolute inset-0 flex items-end p-6">
+          <div class="space-y-2">
+            <span class="inline-flex px-3 py-1 rounded-full text-[11px] font-semibold bg-white/15 text-gray-100 tracking-wide">
+              BAZIN • HAUTE QUALITÉ
+            </span>
+            <h3 class="text-lg font-semibold text-white leading-tight">Luxe & Lumière</h3>
+            <p class="text-xs text-gray-200 max-w-xs">
+              Bazins nobles pour tenues de fêtes, soirées et grandes occasions.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carte collection 3 -->
+      <div class="relative h-64 rounded-3xl overflow-hidden group cursor-pointer bg-neutral-900">
+        <ng-container *ngIf="derniersProduits.length > 2; else collection3Fallback">
+          <img
+            [src]="derniersProduits[2].image ? 'http://127.0.0.1:8000/storage/' + derniersProduits[2].image : 'assets/images/no-image.jpg'"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </ng-container>
+        <ng-template #collection3Fallback>
+          <img src="https://i.pinimg.com/1200x/f6/d9/36/f6d9369d250948891927804c0fa3f6cf.jpg" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </ng-template>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <div class="absolute inset-0 flex items-end p-6">
+          <div class="space-y-2">
+            <span class="inline-flex px-3 py-1 rounded-full text-[11px] font-semibold bg-white/15 text-gray-100 tracking-wide">
+              MERCERIE & DÉTAILS
+            </span>
+            <h3 class="text-lg font-semibold text-white leading-tight">Finitions Couture</h3>
+            <p class="text-xs text-gray-200 max-w-xs">
+              Boutons, fils et rubans pour sublimer chaque pièce jusqu'au dernier détail.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FEATURE BLOCK RAWBLOX STYLE -->
+<!-- ========================= -->
+<!-- CREATOR SECTION MODERNE -->
+<!-- ========================= -->
+<section class="relative max-w-7xl mx-auto px-6 pb-28">
+
+  <div class="relative grid lg:grid-cols-2 gap-14 items-center">
+
+    <!-- IMAGE SIDE -->
+    <div class="relative">
+      <!-- Gradient glow -->
+      <div class="absolute -inset-4 bg-gradient-to-tr from-orange-400/30 via-pink-400/20 to-purple-400/30 blur-2xl rounded-[40px]"></div>
+
+      <div class="relative rounded-[32px] overflow-hidden shadow-2xl">
+        <img
+          src="https://i.pinimg.com/1200x/90/e3/35/90e3352923217ebc59f9e045fd087aac.jpg"
+          class="w-full h-[520px] object-cover hover:scale-105 transition duration-700"
+        />
+      </div>
+
+      <!-- Floating badge -->
+      <div class="absolute -bottom-6 left-6 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl px-6 py-3">
+        <p class="font-semibold text-sm">Communauté créative</p>
+        <p class="text-xs text-gray-500">Designers · Couturiers · Stylistes</p>
+      </div>
+    </div>
+
+    <!-- CONTENT SIDE -->
+    <div class="relative">
+
+      <!-- Glass card -->
+      <div class="relative bg-white/70 backdrop-blur-xl rounded-[32px] p-12 shadow-2xl border border-white/40">
+
+        <!-- Tag -->
+        <span class="inline-block mb-4 px-4 py-1 rounded-full 
+                     bg-gradient-to-r from-orange-500 to-pink-500 
+                     text-white text-xs font-semibold tracking-wide">
+          Plateforme créative
+        </span>
+
+        <h2 class="text-4xl font-extrabold leading-tight mb-5">
+          Built by creators,<br>
+          <span class="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+            for creators
+          </span>
+        </h2>
+
+        <p class="text-gray-600 text-lg leading-relaxed max-w-xl mb-10">
+          Une plateforme pensée pour les stylistes, couturiers et créateurs africains modernes.
+          Des matières premières premium, un stock fiable, une logistique fluide,
+          et un écosystème professionnel pour développer votre activité.
+        </p>
+
+        <!-- Feature cards -->
+        <div class="grid grid-cols-2 gap-6 mb-10">
+
+          <div class="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition">
+            <div class="absolute top-0 left-0 w-full h-full rounded-2xl bg-gradient-to-br from-orange-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition"></div>
+            <div class="relative">
+              <div class="text-2xl mb-2">🧵</div>
+              <p class="font-semibold">Tissus premium</p>
+              <p class="text-sm text-gray-500">Wax, bazin, dentelles, soies</p>
+            </div>
+          </div>
+
+          <div class="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition">
+            <div class="absolute top-0 left-0 w-full h-full rounded-2xl bg-gradient-to-br from-orange-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition"></div>
+            <div class="relative">
+              <div class="text-2xl mb-2">🪡</div>
+              <p class="font-semibold">Mercerie pro</p>
+              <p class="text-sm text-gray-500">Finitions & accessoires couture</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CTA -->
+        <div class="flex gap-4">
+          <a routerLink="/categories"
+             class="px-8 py-3 rounded-xl 
+                    bg-gradient-to-r from-orange-500 to-pink-500 
+                    text-white font-semibold 
+                    hover:scale-105 transition transform shadow-lg">
+            Explorer les catégories
+          </a>
+
+          <a routerLink="/nouveautes"
+             class="px-8 py-3 rounded-xl border border-gray-300 font-semibold hover:bg-gray-100 transition">
+            Voir nouveautés
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+</div>

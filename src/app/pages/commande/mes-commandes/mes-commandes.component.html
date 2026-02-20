@@ -1,0 +1,134 @@
+<div class="mes-commandes-page">
+  <div class="mes-commandes-header">
+    <h1>Mes commandes</h1>
+    <p>
+      Retrouvez ici le récapitulatif de vos commandes Ahma-Dile,
+      leur statut et les différentes étapes jusqu'à la livraison.
+    </p>
+    <div *ngIf="!isLoading && !errorMessage && stats.total > 0" class="mes-commandes-stats">
+      <div class="mes-commandes-stat">
+        <span class="label">Total</span>
+        <span class="value">{{ stats.total }}</span>
+      </div>
+      <div class="mes-commandes-stat">
+        <span class="label">En Attente</span>
+        <span class="value">{{ stats.enAttente }}</span>
+      </div>
+      <div class="mes-commandes-stat">
+        <span class="label">Confirmées</span>
+        <span class="value">{{ stats.confirmees }}</span>
+      </div>
+      <div class="mes-commandes-stat">
+        <span class="label">Expédiées</span>
+        <span class="value">{{ stats.expediees }}</span>
+      </div>
+      <div class="mes-commandes-stat">
+        <span class="label">Livrées</span>
+        <span class="value">{{ stats.livrees }}</span>
+      </div>
+      <button type="button" class="btn-secondary refresh-btn" (click)="chargerMesCommandes()">
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="state state-loading">
+    <div class="spinner"></div>
+    <p>Chargement de vos commandes...</p>
+  </div>
+
+  <div *ngIf="!isLoading && errorMessage" class="state state-error">
+    <p>{{ errorMessage }}</p>
+    <button type="button" class="btn-primary" (click)="chargerMesCommandes()">
+      Réessayer
+    </button>
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && commandes.length === 0" class="state state-empty">
+    <i class="fas fa-box-open"></i>
+    <h2>Vous n'avez pas encore passé de commande</h2>
+    <p>
+      Dès que vous passez une commande, vous pourrez suivre ici chaque étape
+      jusqu'à la livraison de vos tissus.
+    </p>
+    <a routerLink="/produits" class="btn-primary">Découvrir les produits</a>
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && commandes.length > 0" class="commandes-list">
+    <div
+      class="commande-card"
+      *ngFor="let c of commandes"
+    >
+      <div class="commande-main">
+        <div class="commande-ref">
+          <span class="label">Commande</span>
+          <span class="value">#{{ c.reference || c.id }}</span>
+        </div>
+        <div class="commande-date">
+          <span class="label">Date</span>
+          <span class="value">{{ c.date_commande | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="commande-total">
+          <span class="label">Total</span>
+          <span class="value">{{ c.total | number:'1.0-0' }} XOF</span>
+        </div>
+        <div class="commande-statut">
+          <span class="label">Statut</span>
+          <span class="statut-pill">{{ getStatutLabel(c.statut) }}</span>
+        </div>
+      </div>
+
+      <div class="commande-meta">
+        <div class="commande-produits">
+          <span class="label">Articles</span>
+          <span class="value">
+            {{ getNombreArticles(c) }} article{{ getNombreArticles(c) > 1 ? 's' : '' }}
+            <ng-container *ngIf="getResumeProduits(c)">
+              · {{ getResumeProduits(c) }}
+            </ng-container>
+          </span>
+        </div>
+        <div class="commande-livraison" *ngIf="c.livraison?.ville">
+          <span class="label">Livraison</span>
+          <span class="value">Vers {{ c.livraison?.ville }}</span>
+        </div>
+      </div>
+
+      <div class="commande-steps">
+        <div class="commande-timeline">
+          <div class="timeline-step" [class.active]="getStepIndex(c) >= 1">
+            <div class="dot">1</div>
+            <span class="text">En Attente</span>
+          </div>
+          <div class="timeline-bar" [class.active]="getStepIndex(c) > 1"></div>
+          <div class="timeline-step" [class.active]="getStepIndex(c) >= 2">
+            <div class="dot">2</div>
+            <span class="text">Confirmée</span>
+          </div>
+          <div class="timeline-bar" [class.active]="getStepIndex(c) > 2"></div>
+          <div class="timeline-step" [class.active]="getStepIndex(c) >= 3">
+            <div class="dot">3</div>
+            <span class="text">Expédiée</span>
+          </div>
+          <div class="timeline-bar" [class.active]="getStepIndex(c) > 3"></div>
+          <div class="timeline-step" [class.active]="getStepIndex(c) >= 4">
+            <div class="dot">4</div>
+            <span class="text">Livrée</span>
+          </div>
+        </div>
+
+        <div class="commande-steps-bottom">
+          <p class="etape-description">
+            {{ getEtapeDescription(c.statut) }}
+          </p>
+          <div class="commande-avis-info" *ngIf="peutLaisserAvis(c)">
+            Commande livrée : vous pouvez laisser un avis sur vos produits.
+          </div>
+          <button type="button" class="btn-secondary" (click)="voirDetails(c)">
+            {{ peutLaisserAvis(c) ? 'Voir le détail & laisser un avis' : 'Voir le détail & suivre la livraison' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,271 @@
+<div class="bg-slate-50 text-gray-800">
+  <br>
+  <br>
+
+  <!-- ================= HERO ================= -->
+<section
+  class="relative min-h-[85vh] flex items-center bg-center bg-cover"
+  style="background-image: url('https://cdn.shopify.com/s/files/1/0738/7886/4137/files/tissu-africain-traditionnel_1_1024x1024.jpg?v=1726136734');"
+>
+  <!-- Overlay sombre -->
+  <div class="absolute inset-0 bg-black/50"></div>
+
+  <!-- Dégradé marque -->
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-transparent to-orange-900/60"></div>
+
+  <!-- Contenu -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-14 items-center">
+
+    <!-- Texte -->
+    <div class="text-white">
+      <span
+        class="inline-block mb-5 px-5 py-2 rounded-full
+               bg-white/10 backdrop-blur
+               text-sm font-semibold tracking-wide"
+      >
+        Alma-Dile • Tissus & Mercerie
+      </span>
+
+      <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+        Des tissus africains
+        <span class="text-orange-400">authentiques</span><br />
+        pour vos créations uniques
+      </h1>
+
+      <p class="mt-6 text-lg text-gray-200 max-w-xl">
+        Wax, bazin, dentelle, mercerie et accessoires de couture.
+        Une sélection de qualité pour stylistes, couturiers et passionnés.
+      </p>
+
+      <div class="mt-10 flex flex-wrap gap-4">
+        <button
+          (click)="scrollToCategories()"
+          class="inline-flex items-center gap-3 px-8 py-4 rounded-xl
+                 bg-orange-500 hover:bg-orange-600
+                 text-white font-semibold text-lg
+                 shadow-xl transition transform hover:-translate-y-1"
+        >
+          Explorer les catégories
+          <i class="fas fa-arrow-down"></i>
+        </button>
+
+        <a
+          routerLink="/produits"
+          class="inline-flex items-center gap-2 px-8 py-4 rounded-xl
+                 border border-white/40
+                 text-white font-semibold
+                 hover:bg-white/10 transition"
+        >
+          Voir les produits
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Bloc visuel secondaire -->
+    <div class="hidden md:flex justify-center">
+      <div
+        class="relative rounded-3xl overflow-hidden shadow-2xl
+               ring-1 ring-white/20 backdrop-blur"
+      >
+        <img
+          src="https://i.pinimg.com/1200x/78/c3/64/78c364f19ff2f5f3c2c38b778083297c.jpg"
+          alt="Tissu africain"
+          class="w-[420px] h-[520px] object-cover"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+  <!-- ================= FILTRES ================= -->
+  <section class="sticky top-0 z-20 bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap gap-4 items-center">
+
+      <!-- Filtres type -->
+      <div class="flex gap-2">
+        <button
+          class="px-5 py-2 rounded-full border text-sm font-semibold transition"
+          [class.bg-blue-600]="activeFilter === 'all'"
+          [class.text-white]="activeFilter === 'all'"
+          (click)="setFilter('all')"
+        >
+          Toutes
+        </button>
+
+        <button
+          class="px-5 py-2 rounded-full border text-sm font-semibold transition"
+          [class.bg-blue-600]="activeFilter === 'tissu'"
+          [class.text-white]="activeFilter === 'tissu'"
+          (click)="setFilter('tissu')"
+        >
+          Tissus
+        </button>
+
+        <button
+          class="px-5 py-2 rounded-full border text-sm font-semibold transition"
+          [class.bg-orange-500]="activeFilter === 'mercerie'"
+          [class.text-white]="activeFilter === 'mercerie'"
+          (click)="setFilter('mercerie')"
+        >
+          Mercerie
+        </button>
+      </div>
+
+      <!-- Recherche -->
+      <div class="ml-auto relative w-full sm:w-72">
+        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        <input
+          type="text"
+          placeholder="Rechercher une catégorie..."
+          (input)="filterCategories($event)"
+          class="w-full pl-12 pr-4 py-2 rounded-full border border-gray-300
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CATÉGORIES VEDETTES ================= -->
+  <section class="max-w-7xl mx-auto px-6 py-20">
+    <h2 class="text-3xl font-bold text-gray-900 mb-10">
+      Catégories populaires
+    </h2>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div
+        *ngFor="let category of featuredCategories"
+        class="relative group rounded-3xl overflow-hidden shadow-xl"
+      >
+        <img
+          [src]="getImageUrl(category.image)"
+          [alt]="category.nom"
+          class="w-full h-72 object-cover transition group-hover:scale-105"
+        />
+
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+
+        <div class="absolute bottom-0 p-6 text-white">
+          <span class="inline-block mb-2 px-3 py-1 rounded-full text-xs font-semibold bg-orange-500">
+            Populaire
+          </span>
+
+          <h3 class="text-2xl font-bold">{{ category.nom }}</h3>
+
+          <a
+            [routerLink]="['/categorie', category.slug || category.id]"
+            class="mt-4 inline-flex items-center gap-2 font-semibold text-orange-300 hover:text-white transition"
+          >
+            Explorer
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TOUTES LES CATÉGORIES ================= -->
+  <section id="categories" class="bg-white py-20">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <h2 class="text-3xl font-bold text-gray-900 mb-10">
+        Toutes les catégories
+      </h2>
+
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div
+          *ngFor="let category of filteredCategories; trackBy: trackByCategoryId"
+          class="bg-white rounded-2xl overflow-hidden shadow-md
+                 hover:shadow-xl hover:-translate-y-1 transition"
+        >
+          <div class="relative">
+            <img
+              [src]="category.imageUrl || 'assets/images/default-category.jpg'"
+              [alt]="category.nom"
+              class="w-full h-44 object-cover"
+            />
+
+            <span
+              class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white"
+              [ngClass]="{
+                'bg-blue-600': category.type === 'tissu',
+                'bg-orange-500': category.type === 'mercerie'
+              }"
+            >
+              {{ category.type }}
+            </span>
+          </div>
+
+          <div class="p-5">
+            <h3 class="font-bold text-lg text-gray-900">
+              {{ category.nom }}
+            </h3>
+
+            <a
+              [routerLink]="['/categorie', category.slug || category.id]"
+              class="mt-4 inline-block text-sm font-semibold text-blue-600 hover:text-orange-500 transition"
+            >
+              Voir les produits →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="filteredCategories.length === 0" class="text-center py-20">
+        <i class="fas fa-folder-open text-4xl text-gray-400 mb-4"></i>
+        <p class="text-gray-500">
+          Aucune catégorie ne correspond à votre recherche.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RÉASSURANCE ================= -->
+  <section class="services-section">
+    <div class="container">
+      <div class="section-header">
+        <h2><i class="fas fa-concierge-bell"></i> Nos Services</h2>
+        <p>Ce que nous offrons à nos clients</p>
+      </div>
+      
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-cut"></i>
+          </div>
+          <h3>Coupe sur mesure</h3>
+          <p>Service de coupe de tissu selon vos dimensions exactes</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-truck"></i>
+          </div>
+          <h3>Livraison rapide</h3>
+          <p>Expédition sous 24h pour toutes les commandes</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-undo"></i>
+          </div>
+          <h3>Retours faciles</h3>
+          <p>Politique de retour sans tracas sous 14 jours</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h3>Support client</h3>
+          <p>Assistance par téléphone et email 6j/7</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

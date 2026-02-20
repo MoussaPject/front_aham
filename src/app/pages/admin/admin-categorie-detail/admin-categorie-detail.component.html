@@ -1,0 +1,169 @@
+<section class="min-h-screen bg-slate-50 p-6" *ngIf="categorie as c">
+  <!-- HEADER -->
+  <div class="flex flex-col lg:flex-row justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-blue-700">
+        Catégorie : {{ c.nom }}
+      </h1>
+      <p class="text-slate-500 mt-1 flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="{
+                'bg-blue-100 text-blue-700': c.type === 'tissu',
+                'bg-orange-100 text-orange-700': c.type === 'mercerie'
+              }">
+          {{ getTypeLabel(c.type) }}
+        </span>
+        <span class="text-xs text-slate-400">ID #{{ c.id }}</span>
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="revenirAListe()"
+      class="self-start px-5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition"
+    >
+      ← Retour aux catégories
+    </button>
+  </div>
+
+  <div *ngIf="apiError" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">
+    {{ apiError }}
+  </div>
+
+  <div *ngIf="isLoading" class="text-sm text-slate-600">Chargement de la catégorie...</div>
+
+  <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Carte infos principales -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 space-y-4">
+      <h2 class="text-lg font-semibold text-blue-700">Informations générales</h2>
+
+      <div class="flex justify-between text-sm">
+        <span class="text-slate-500">Nom</span>
+        <span class="font-medium text-slate-900">{{ c.nom }}</span>
+      </div>
+
+      <div class="flex justify-between text-sm">
+        <span class="text-slate-500">Type</span>
+        <span class="font-medium">{{ getTypeLabel(c.type) }}</span>
+      </div>
+
+      <div class="flex justify-between text-sm items-center">
+        <span class="text-slate-500">Statut</span>
+        <span
+          class="px-3 py-1 rounded-full text-xs font-semibold"
+          [ngClass]="{
+            'bg-emerald-100 text-emerald-700': c.active,
+            'bg-slate-200 text-slate-600': !c.active
+          }">
+          {{ c.active ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+
+      <div class="flex justify-between text-sm">
+        <span class="text-slate-500">Ordre d'affichage</span>
+        <span class="font-medium">{{ c.ordre ?? '—' }}</span>
+      </div>
+    </div>
+
+    <!-- Carte description -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 space-y-3 lg:col-span-1">
+      <h2 class="text-lg font-semibold text-blue-700">Description</h2>
+      <p class="text-sm text-slate-700 whitespace-pre-line">
+        {{ c.description || 'Aucune description fournie pour cette catégorie.' }}
+      </p>
+    </div>
+
+    <!-- Carte image -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 space-y-3">
+      <h2 class="text-lg font-semibold text-blue-700">Visuel</h2>
+
+      <div class="aspect-[4/3] rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center">
+        <img
+          *ngIf="c.imageUrl; else placeholder"
+          [src]="c.imageUrl"
+          [alt]="c.nom"
+          class="w-full h-full object-cover"
+        />
+        <ng-template #placeholder>
+          <div class="text-center text-slate-400 text-sm">
+            Aucune image définie pour cette catégorie.
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PRODUITS DE LA CATÉGORIE ================= -->
+  <div class="mt-10 bg-white rounded-xl shadow-sm border border-slate-100 p-6 space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-semibold text-blue-700">
+          Produits de cette catégorie
+        </h2>
+        <p class="text-sm text-slate-500">
+          Vue d'ensemble des articles rattachés à la catégorie {{ c.nom }}.
+        </p>
+      </div>
+      <div class="text-sm text-slate-500" *ngIf="produits.length">
+        {{ produits.length }} produit(s) trouvé(s)
+      </div>
+    </div>
+
+    <!-- État vide -->
+    <div *ngIf="!produits.length" class="py-10 text-center text-slate-500 text-sm border border-dashed border-slate-200 rounded-xl bg-slate-50">
+      Aucun produit n'est actuellement associé à cette catégorie.
+    </div>
+
+    <!-- Grille produits -->
+    <div *ngIf="produits.length" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-4">
+      <article
+        *ngFor="let p of produits"
+        class="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition overflow-hidden flex flex-col"
+      >
+        <div class="h-36 bg-slate-100 overflow-hidden">
+          <img
+            [src]="p.image ? 'http://127.0.0.1:8000/storage/' + p.image : 'assets/images/no-image.jpg'"
+            [alt]="p.nom"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <div class="p-4 flex flex-col gap-2 flex-1">
+          <h3 class="text-sm font-semibold text-slate-900 truncate">
+            {{ p.nom }}
+          </h3>
+
+          <div class="text-xs text-slate-500 flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700" *ngIf="p.type === 'tissu'">Tissu</span>
+            <span class="px-2 py-0.5 rounded-full bg-orange-50 text-orange-700" *ngIf="p.type === 'mercerie'">Mercerie</span>
+            <span class="text-slate-400" *ngIf="!p.type">Type non défini</span>
+          </div>
+
+          <div class="text-sm text-slate-500">
+            Stock :
+            <span [ngClass]="{
+              'text-emerald-600': (p.quantite || 0) > 5,
+              'text-amber-600': (p.quantite || 0) > 0 && (p.quantite || 0) <= 5,
+              'text-red-600': (p.quantite || 0) === 0
+            }">
+              {{ p.quantite || 0 }}
+            </span>
+          </div>
+
+          <div class="text-base font-semibold text-orange-600 mt-auto">
+            {{ p.prix | number:'1.0-0' }} XOF
+          </div>
+
+          <div class="pt-3 flex justify-end">
+            <a
+              class="px-3 py-1.5 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+              [routerLink]="['/produits', p.id]"
+            >
+              Voir la fiche produit
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

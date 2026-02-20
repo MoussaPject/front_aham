@@ -1,0 +1,206 @@
+<!-- home.component.html -->
+<main class="home-page">
+  <section class="hero-section" role="banner">
+    <div class="hero-carousel">
+      <div *ngFor="let slide of heroSlides; let i = index" class="hero-slide" [class.active]="i === currentSlide"
+        [style.backgroundImage]="'url(' + getImageUrl(slide) + ')'">
+  
+        <div class="hero-overlay"></div>
+  
+        <div class="container hero-container">
+          <div class="hero-content">
+            <span class="hero-badge">Ahma-Dile • Tissus & Mercerie</span>
+            <h1 class="hero-title">Imaginez, cousez, créez.</h1>
+            <p class="hero-subtitle">
+              Wax, bazin, dentelle, mercerie et accessoires sélectionnés avec soin pour vos plus belles créations.
+            </p>
+  
+            <div class="hero-filters">
+              <button (click)="setFilter('all')" class="filter-chip" [class.active]="activeFilter === 'all'">Tout</button>
+              <button (click)="setFilter('tissu')" class="filter-chip"
+                [class.active]="activeFilter === 'tissu'">Tissus</button>
+              <button (click)="setFilter('mercerie')" class="filter-chip"
+                [class.active]="activeFilter === 'mercerie'">Mercerie</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <button class="carousel-btn prev" (click)="prevSlide()" aria-label="Diapositive précédente">
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button class="carousel-btn next" (click)="nextSlide()" aria-label="Diapositive suivante">
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </button>
+  
+      <div class="carousel-dots">
+        <button *ngFor="let slide of heroSlides; let i = index" class="dot" [class.active]="i === currentSlide"
+          (click)="goToSlide(i)" [attr.aria-label]="'Aller à la diapositive ' + (i + 1)">
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container" role="status" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <p class="loading-text">Chargement...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container" role="alert">
+    <div class="error-box">
+      <h2 class="error-title">Erreur de chargement</h2>
+      <p class="error-message">{{ error }}</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error" class="main-content">
+    <div class="container">
+      <div class="content-grid">
+        
+        <!-- Sidebar Filtres -->
+        <aside class="filters-sidebar" role="complementary">
+          <div class="sidebar-sticky">
+            <h3 class="sidebar-title">Filtres</h3>
+            <button type="button" class="btn-reset" (click)="resetFilters()" [disabled]="!hasActiveFilters()">
+              Réinitialiser
+            </button>
+            
+            <div class="filter-group">
+              <label class="filter-label" for="search">Recherche</label>
+              <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" 
+                       placeholder="Rechercher..." class="search-input" aria-label="Rechercher des produits" />
+              </div>
+            </div>
+            
+            <div class="filter-group">
+              <label class="filter-label" for="category">Catégorie</label>
+              <select [(ngModel)]="selectedCategory" (change)="applyFilters()" class="filter-select" aria-label="Filtrer par catégorie">
+                <option value="all">Toutes les catégories</option>
+                <option *ngFor="let cat of categories" [value]="cat.id">
+                  {{ cat.nom }}
+                </option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label class="filter-label" for="price">Prix (FCFA)</label>
+              <div class="price-inputs">
+                <input type="number" [(ngModel)]="priceRange.min" (input)="applyFilters()" 
+                       placeholder="Min" class="price-input" aria-label="Prix minimum" />
+                <input type="number" [(ngModel)]="priceRange.max" (input)="applyFilters()" 
+                       placeholder="Max" class="price-input" aria-label="Prix maximum" />
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Products Section -->
+        <section class="products-section" role="main">
+          <div class="products-toolbar">
+            <span class="results-count">{{ filteredProducts.length }} produit(s)</span>
+            <select [(ngModel)]="sortOption" (change)="sortProducts()" class="sort-select" aria-label="Trier les produits">
+              <option value="default">Trier par</option>
+              <option value="name-asc">Nom (A-Z)</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+            </select>
+          </div>
+          
+          <div class="products-grid" role="list">
+            <article *ngFor="let product of filteredProducts" class="product-card">
+              
+              <div class="product-image-wrapper">
+                <img [src]="getImageUrl(product.image)" [alt]="'Image du produit ' + product.nom" 
+                     (error)="onImageError($event)" loading="lazy" class="product-image" />
+              </div>
+              
+              <div class="product-info">
+                <div class="product-rating">
+                  <i *ngFor="let star of [1,2,3,4,5]" class="fas fa-star" 
+                     style="color: #fbbf24; font-size: 0.75rem;" aria-hidden="true"></i>
+                </div>
+                
+                <h3 class="product-name">
+                  <a [routerLink]="['/produit', product.slug || product.id]" class="product-link">
+                    {{ product.nom }}
+                  </a>
+                </h3>
+                
+                <p class="product-type">{{ product.type }}</p>
+                
+                <p class="product-unit" *ngIf="product.unite">Unité : {{ product.unite }}</p>
+                
+                <div class="product-price">
+                  <span class="price-current">{{ formatPrice(product.prix) }}</span>
+                  <span *ngIf="product.prix > 100" class="price-old">{{ formatPrice(product.prix + 5000) }}</span>
+                </div>
+                
+                <div class="product-actions">
+                  <button type="button" class="btn-details" [routerLink]="['/produit', product.slug || product.id]">
+                    <i class="fas fa-info-circle"></i> Détails
+                  </button>
+                  
+                  <button type="button" class="btn-add-cart" (click)="addToCart(product)" 
+                          [disabled]="product.quantite === 0">
+                    <i class="fas fa-shopping-cart"></i>
+                    {{ product.quantite === 0 ? 'Rupture' : 'Ajouter' }}
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Catégories -->
+  <section class="categories-section" *ngIf="!loading && !error" role="region">
+    <div class="container">
+      <h2 class="section-title">Nos collections</h2>
+      
+      <div class="categories-grid">
+        <article *ngFor="let category of categories.slice(0, 4)" class="category-card">
+          <div class="category-image-wrapper" 
+               [style.backgroundImage]="'url(' + getImageUrl(category.imageUrl) + ')'">
+            <div class="category-overlay"></div>
+            
+            <div class="category-content">
+              <span class="category-badge">{{ category.type || 'Populaire' }}</span>
+              <h2 class="category-name">{{ category.nom }}</h2>
+              <button type="button" class="btn-explore" 
+                      [routerLink]="['/categorie', category.slug || category.id]">
+                Explorer <i class="fas fa-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Newsletter -->
+  <section class="cta-section" role="region">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">Recevez nos nouveautés et promotions</h2>
+        <p class="cta-subtitle">
+          Pas de spam, uniquement l'essentiel pour vos futures créations.
+        </p>
+        
+        <form class="newsletter-form" (submit)="subscribeNewsletter($event)">
+          <input type="email" placeholder="Votre adresse email" [(ngModel)]="newsletterEmail" 
+                 name="email" required class="newsletter-input" aria-label="Email pour newsletter" />
+          <button type="submit" class="btn-subscribe">
+            S'abonner
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>

@@ -1,0 +1,154 @@
+/* --- CONFIGURATION GLOBALE & TAILWIND --- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- BASES & STABILISATION DU LAYOUT --- */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: #fcfcfc;
+}
+
+:root {
+  --primary: #1c2b64;
+  --secondary: #4c6fff;
+  --orange-ahma: #f68b1e;
+  /* Ton orange officiel */
+  --light: #f9f9f9;
+  --text-dark: #1a1a1a;
+  --text-muted: #777;
+  --danger: #d9534f;
+  --toast-radius: 20px;
+}
+
+/* Layout stabilization */
+.main-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1 0 auto;
+}
+
+app-footer {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* --- DESIGN DES SNACKBARS (CONFIRMATIONS) --- */
+
+@keyframes ahma-toast-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Conteneur principal : toast moderne centré sous le navbar */
+.ahma-snackbar.mat-mdc-snack-bar-container {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 16px;
+  padding: 12px 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  max-width: 420px;
+  margin-top: 80px; /* espace sous le navbar */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: ahma-toast-in 0.35s ease-out;
+}
+
+/* Icône circulaire à gauche, différente selon le type */
+.ahma-snackbar.mat-mdc-snack-bar-container::before {
+  content: '';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.ahma-snackbar-success.mat-mdc-snack-bar-container {
+  background: linear-gradient(135deg, #2ed573, #1abc9c);
+  color: #ffffff;
+}
+
+.ahma-snackbar-success.mat-mdc-snack-bar-container::before {
+  content: '✓';
+}
+
+.ahma-snackbar-error.mat-mdc-snack-bar-container {
+  background: linear-gradient(135deg, #ff4757, #e84118);
+  color: #ffffff;
+}
+
+.ahma-snackbar-error.mat-mdc-snack-bar-container::before {
+  content: '!';
+}
+
+.ahma-snackbar-warning.mat-mdc-snack-bar-container {
+  background: linear-gradient(135deg, #ffa502, #ff7f50);
+  color: #1a1a1a;
+}
+
+.ahma-snackbar-warning.mat-mdc-snack-bar-container::before {
+  content: 'i';
+}
+
+.ahma-snackbar-info.mat-mdc-snack-bar-container {
+  background: linear-gradient(135deg, #1e90ff, #3742fa);
+  color: #ffffff;
+}
+
+.ahma-snackbar-info.mat-mdc-snack-bar-container::before {
+  content: 'i';
+}
+
+/* Texte du message */
+.ahma-snackbar .mdc-snackbar__label {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Bouton "Fermer" intégré au toast */
+.ahma-snackbar .mat-mdc-snack-bar-action .mat-mdc-button-base {
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.ahma-snackbar-warning .mat-mdc-snack-bar-action .mat-mdc-button-base {
+  color: #1a1a1a;
+}
+
+/* Un peu plus compact sur mobile */
+@media (max-width: 640px) {
+  .ahma-snackbar.mat-mdc-snack-bar-container {
+    max-width: calc(100vw - 32px);
+    margin-top: 70px;
+    padding-inline: 14px;
+  }
+}

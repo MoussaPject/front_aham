@@ -1,0 +1,216 @@
+<section class="min-h-screen bg-slate-50 p-6 space-y-8">
+
+  <!-- ================= HEADER ================= -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-blue-700">
+        Catégories – Tissus & Mercerie
+      </h1>
+      <p class="text-sm text-slate-500 mt-1">
+        Organisez le catalogue Ahma-Dile par familles de produits, avec une vue claire pour l'équipe admin.
+      </p>
+    </div>
+  </header>
+
+  <!-- ================= FORMULAIRE ================= -->
+  <section class="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
+    <h2 class="text-lg font-semibold text-blue-700 mb-4">
+      Ajouter une catégorie
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <!-- Nom -->
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1">
+          Nom de la catégorie
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="newCategory.nom"
+          placeholder="Ex : Tissus Wax"
+          class="w-full rounded-md border-slate-300 text-sm
+                 focus:border-orange-500 focus:ring-orange-500"
+        />
+      </div>
+
+      <!-- Type -->
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1">
+          Type
+        </label>
+        <select
+          [(ngModel)]="newCategory.type"
+          class="w-full rounded-md border-slate-300 text-sm
+                 focus:border-orange-500 focus:ring-orange-500"
+        >
+          <option value="">Choisir un type</option>
+          <option value="tissu">Tissu</option>
+          <option value="mercerie">Mercerie</option>
+        </select>
+      </div>
+
+      <!-- Ordre -->
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1">
+          Ordre d’affichage
+        </label>
+        <input
+          type="number"
+          [(ngModel)]="newCategory.ordre"
+          class="w-full rounded-md border-slate-300 text-sm
+                 focus:border-orange-500 focus:ring-orange-500"
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="md:col-span-2">
+        <label class="block text-xs font-medium text-slate-700 mb-1">
+          Description
+        </label>
+        <textarea
+          rows="2"
+          [(ngModel)]="newCategory.description"
+          placeholder="Courte description de la catégorie"
+          class="w-full rounded-md border-slate-300 text-sm
+                 focus:border-orange-500 focus:ring-orange-500"
+        ></textarea>
+      </div>
+
+      <!-- Image -->
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1">
+          Image
+        </label>
+        <input
+          type="file"
+          (change)="onFileSelected($event)"
+          class="block w-full text-sm text-slate-600
+                 file:mr-3 file:py-1.5 file:px-3
+                 file:rounded-md file:border-0
+                 file:bg-orange-50 file:text-orange-700
+                 hover:file:bg-orange-100"
+        />
+      </div>
+
+      <!-- Active -->
+      <div class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          [(ngModel)]="newCategory.active"
+          class="rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+        />
+        <span class="text-sm text-slate-700">Catégorie active</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-5 flex justify-end">
+      <button
+        type="button"
+        (click)="addCategory()"
+        [disabled]="!newCategory.nom || !newCategory.type || isSaving"
+        class="inline-flex items-center gap-2 px-5 py-2 rounded-md
+               bg-gradient-to-r from-orange-500 to-amber-500
+               text-white text-sm font-medium shadow
+               hover:shadow-md disabled:opacity-60"
+      >
+        <i class="fas fa-plus"></i>
+        Ajouter la catégorie
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= ETATS ================= -->
+  <div *ngIf="apiError" class="rounded-md bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">
+    {{ apiError }}
+  </div>
+
+  <div *ngIf="isLoading" class="grid md:grid-cols-3 gap-4">
+    <div *ngFor="let i of [1,2,3,4,5,6]"
+         class="h-40 rounded-xl bg-slate-100 animate-pulse"></div>
+  </div>
+
+  <!-- ================= EMPTY ================= -->
+  <div *ngIf="!isLoading && !categories.length"
+       class="flex flex-col items-center justify-center gap-3 py-14
+              border border-dashed border-slate-200 rounded-xl bg-slate-50">
+    <i class="fas fa-tags text-3xl text-slate-400"></i>
+    <p class="text-slate-600 text-sm">
+      Aucune catégorie enregistrée.
+    </p>
+  </div>
+
+  <!-- ================= GRID ================= -->
+  <div *ngIf="!isLoading && categories.length"
+       class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+    <article *ngFor="let c of categories"
+             class="bg-white rounded-xl border border-slate-100 shadow-sm
+                    hover:shadow-lg hover:-translate-y-0.5 transition overflow-hidden">
+
+      <!-- Image -->
+      <div class="h-32 bg-slate-100 overflow-hidden">
+        <img
+          [src]="c.imageUrl || 'assets/images/default-category.jpg'"
+          [alt]="c.nom"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Contenu -->
+      <div class="p-4 space-y-2">
+        <h2 class="text-sm font-semibold text-slate-900">
+          {{ c.nom }}
+        </h2>
+
+        <div class="text-xs text-slate-500">
+          Type :
+          <span class="font-medium uppercase">{{ c.type || '—' }}</span>
+        </div>
+
+        <p class="text-xs text-slate-500 line-clamp-2">
+          {{ c.description || 'Aucune description.' }}
+        </p>
+
+        <!-- Actions -->
+        <div class="pt-3 flex items-center justify-between gap-2">
+          <label class="flex items-center gap-2 text-xs">
+            <input
+              type="checkbox"
+              [checked]="c.active"
+              (change)="toggleActive(c)"
+              class="rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+            />
+            <span [class.text-emerald-600]="c.active"
+                  [class.text-slate-400]="!c.active">
+              {{ c.active ? 'Active' : 'Inactive' }}
+            </span>
+          </label>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-md bg-blue-50 text-blue-700 text-xs border border-blue-200
+                     hover:bg-blue-100"
+              (click)="goToDetail(c)"
+            >
+              Détails
+            </button>
+
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-md bg-red-500 text-white text-xs
+                     hover:bg-red-600"
+              (click)="deleteCategorie(c)"
+            >
+              <i class="fas fa-trash mr-1"></i>
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>

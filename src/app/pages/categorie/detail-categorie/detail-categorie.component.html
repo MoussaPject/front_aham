@@ -1,0 +1,69 @@
+<main class="category-detail-page">
+  <nav class="breadcrumb-section" aria-label="Fil d'Ariane">
+    <div class="container">
+      <a routerLink="/categories" class="breadcrumb-link">Catégories</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <span *ngIf="categorie" class="breadcrumb-current">{{ categorie.nom }}</span>
+    </div>
+  </nav>
+
+  <header class="category-header" *ngIf="categorie">
+    <div class="container header-grid">
+      <div class="header-media">
+        <img
+          class="header-image"
+          [src]="getImageUrl(categorie.image)"
+          [alt]="'Image de la catégorie ' + categorie.nom"
+          (error)="onImageError($event)"
+          loading="lazy"
+        />
+      </div>
+
+      <div class="header-content">
+        <span class="badge" [class.tissu]="categorie.type === 'tissu'" [class.mercerie]="categorie.type === 'mercerie'">
+          {{ categorie.type }}
+        </span>
+        <h1>{{ categorie.nom }}</h1>
+        <p class="muted">Découvrez les produits de cette catégorie.</p>
+
+        <div class="header-actions">
+          <button type="button" class="btn" routerLink="/produits">Voir tout le catalogue</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="category-content">
+    <div class="container">
+      <div class="loading" *ngIf="isLoading" aria-live="polite">Chargement...</div>
+
+      <div class="error" *ngIf="!isLoading && errorMessage" role="alert">{{ errorMessage }}</div>
+
+      <div class="empty" *ngIf="!isLoading && !errorMessage && produits.length === 0">
+        <h2>Aucun produit dans cette catégorie</h2>
+        <p class="muted">Revenez plus tard, la collection sera bientôt enrichie.</p>
+        <button type="button" class="btn" routerLink="/produits">Revenir aux produits</button>
+      </div>
+
+      <section class="products-grid" *ngIf="!isLoading && !errorMessage && produits.length > 0" aria-label="Produits de la catégorie">
+        <article class="card" *ngFor="let produit of produits">
+          <div class="card-image">
+            <img
+              [src]="getImageUrl(produit.image)"
+              [alt]="produit.nom"
+              (error)="onImageError($event)"
+            />
+          </div>
+          <div class="card-body">
+            <h3 class="card-title" (click)="goToProductDetail(produit)">{{ produit.nom }}</h3>
+            <p class="card-subtitle">{{ produit.unite }}</p>
+            <div class="card-footer">
+              <span class="price">{{ formatPrice(produit.prix) }}</span>
+              <button type="button" class="btn-outline" (click)="goToProductDetail(produit)">Détails</button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+  </section>
+</main>

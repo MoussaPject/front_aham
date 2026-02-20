@@ -1,0 +1,201 @@
+<section class="min-h-screen bg-slate-50 py-8 px-4 md:px-8" *ngIf="!isLoading; else loadingTpl">
+  <div class="max-w-5xl mx-auto space-y-6" *ngIf="user; else errorTpl">
+    <!-- Header / retour -->
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-2"
+          (click)="goBack()"
+        >
+          <span class="text-lg">←</span>
+          <span>Retour à la liste des utilisateurs</span>
+        </button>
+        <h1 class="text-3xl font-bold text-blue-700 mb-1">Profil utilisateur</h1>
+        <p class="text-slate-600 text-sm">
+          Vue détaillée du compte et de son statut dans votre boutique.
+        </p>
+      </div>
+    </div>
+
+    <!-- Carte principale du profil -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 flex flex-col md:flex-row gap-6">
+      <!-- Avatar / photo -->
+      <div class="flex flex-col items-center md:items-start gap-3 md:w-1/3">
+        <div class="relative">
+          <ng-container *ngIf="user.image; else avatarFallback">
+            <div class="h-28 w-28 rounded-full overflow-hidden shadow-lg">
+              <img
+                class="w-full h-full object-cover"
+                [src]="'http://127.0.0.1:8000/storage/' + user.image"
+                [alt]="'Photo de ' + (user.name || 'utilisateur')"
+              />
+            </div>
+          </ng-container>
+          <ng-template #avatarFallback>
+            <div class="h-28 w-28 rounded-full bg-gradient-to-br from-blue-500 to-orange-400 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+              {{ avatarInitial }}
+            </div>
+          </ng-template>
+          <div
+            class="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-semibold"
+            [class.bg-emerald-500]="isActive"
+            [class.text-white]="isActive"
+            [class.bg-slate-300]="!isActive"
+            [class.text-slate-700]="!isActive"
+          >
+            <span>
+              {{ isActive ? 'On' : 'Off' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="text-center md:text-left">
+          <p class="text-lg font-semibold text-slate-900">{{ user.name }}</p>
+          <p class="text-sm text-slate-500">{{ user.email }}</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 justify-center md:justify-start mt-1">
+          <span
+            class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
+            [class.bg-blue-50]="user.role === 'admin'"
+            [class.text-blue-700]="user.role === 'admin'"
+            [class.bg-orange-50]="user.role === 'vendeur'"
+            [class.text-orange-700]="user.role === 'vendeur'"
+            [class.bg-slate-100]="user.role === 'client'"
+            [class.text-slate-700]="user.role === 'client'"
+          >
+            <span class="text-xs">●</span>
+            <span>{{ roleLabel }}</span>
+          </span>
+
+          <span
+            class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border"
+            [class.bg-emerald-50]="isActive"
+            [class.text-emerald-700]="isActive"
+            [class.border-emerald-200]="isActive"
+            [class.bg-slate-50]="!isActive"
+            [class.text-slate-500]="!isActive"
+            [class.border-slate-200]="!isActive"
+          >
+            <span
+              class="inline-block h-2 w-2 rounded-full"
+              [class.bg-emerald-500]="isActive"
+              [class.bg-slate-300]="!isActive"
+            ></span>
+            <span>{{ isActive ? 'Compte actif' : 'Compte inactif' }}</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Informations détaillées -->
+      <div class="md:w-2/3 grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Identifiant</p>
+            <p class="text-lg font-semibold text-slate-900">#{{ user.id }}</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Rôle</p>
+            <p class="text-lg font-semibold text-slate-900">{{ roleLabel }}</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4">
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Adresse e-mail</p>
+          <p class="text-sm font-medium text-slate-900">{{ user.email }}</p>
+          <a
+            class="inline-flex mt-2 text-xs text-blue-600 hover:text-blue-700 items-center gap-1"
+            [href]="user ? 'mailto:' + user.email : null"
+          >
+            <span>Envoyer un e-mail</span>
+          </a>
+        </div>
+
+        <!-- Coordonnées principales -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Téléphone</p>
+            <p class="text-sm font-medium" [ngClass]="user.telephone ? 'text-slate-900' : 'text-slate-400'">
+              {{ user.telephone || 'Non renseigné' }}
+            </p>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Pays</p>
+            <p class="text-sm font-medium" [ngClass]="user.pays ? 'text-slate-900' : 'text-slate-400'">
+              {{ user.pays || 'Non renseigné' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Localisation détaillée -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Ville</p>
+            <p class="text-sm font-medium" [ngClass]="user.ville ? 'text-slate-900' : 'text-slate-400'">
+              {{ user.ville || 'Non renseignée' }}
+            </p>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Quartier</p>
+            <p class="text-sm font-medium" [ngClass]="user.quartier ? 'text-slate-900' : 'text-slate-400'">
+              {{ user.quartier || 'Non renseigné' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Adresse complète et métadonnées -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2 bg-white rounded-xl border border-slate-200 p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Adresse complète</p>
+            <p class="text-sm whitespace-pre-line" [ngClass]="user.adresse ? 'text-slate-900' : 'text-slate-400'">
+              {{ user.adresse || 'Non renseignée' }}
+            </p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl border border-dashed border-slate-200 p-4 flex flex-col gap-1 text-xs">
+            <p class="font-semibold uppercase tracking-wide text-slate-500 mb-1">Historique</p>
+            <p class="text-slate-500">
+              Créé le
+              <span class="font-medium text-slate-800">{{ user.created_at || '—' }}</span>
+            </p>
+            <p class="text-slate-500">
+              Dernière mise à jour
+              <span class="font-medium text-slate-800">{{ user.updated_at || '—' }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<ng-template #loadingTpl>
+  <section class="min-h-screen bg-slate-50 py-8 px-4 md:px-8 flex items-center justify-center">
+    <div class="flex flex-col items-center gap-3 text-slate-600">
+      <span class="h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
+      <p>Chargement du profil utilisateur...</p>
+    </div>
+  </section>
+</ng-template>
+
+<ng-template #errorTpl>
+  <section class="min-h-screen bg-slate-50 py-8 px-4 md:px-8 flex items-center justify-center">
+    <div class="max-w-md bg-white rounded-2xl shadow-sm border border-red-100 p-6 text-center">
+      <h2 class="text-lg font-semibold text-red-700 mb-2">Profil introuvable</h2>
+      <p class="text-sm text-red-600 mb-4">
+        {{ apiError || "Nous n'avons pas pu récupérer les informations de cet utilisateur." }}
+      </p>
+      <button
+        type="button"
+        class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+        (click)="goBack()"
+      >
+        Retour aux utilisateurs
+      </button>
+    </div>
+  </section>
+</ng-template>

@@ -1,0 +1,267 @@
+<main class="product-detail-page" *ngIf="produit">
+  <nav class="breadcrumb-section" aria-label="Fil d'Ariane">
+    <div class="container">
+      <a routerLink="/produits" class="breadcrumb-link">Produits</a>
+      <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      <span class="breadcrumb-current">{{ produit.nom }}</span>
+    </div>
+  </nav>
+
+  <section class="product-detail-main">
+    <div class="container product-detail-container">
+      <div class="product-image-gallery">
+        <div class="main-image">
+          <img
+            [src]="produit.images && produit.images.length > 0
+                    ? getImageUrl(produit.images[currentImageIndex].image)
+                    : getImageUrl(produit.image)"
+            [alt]="'Image principale du produit ' + produit.nom"
+            (error)="onImageError($event)"
+            loading="lazy"
+          />
+        </div>
+        <div class="thumbnail-images" *ngIf="produit.images && produit.images.length > 0; else fallbackThumbnails">
+          <img *ngFor="let img of produit.images; let idx = index" [src]="getImageUrl(img.image)"
+            [alt]="produit.nom + ' image ' + (idx + 1)" [class.active]="idx === currentImageIndex"
+            (click)="setActiveImage(idx)" (error)="onImageError($event)" />
+        </div>
+
+        <ng-template #fallbackThumbnails>
+          <div class="thumbnail-images">
+            <img [src]="getImageUrl(produit.image)"
+              alt="Thumbnail 1" class="active" (error)="onImageError($event)" />
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="product-info-section">
+        <p class="product-category">Catégorie: {{ produit.type }}</p>
+        <h1 class="product-title">{{ produit.nom }}</h1>
+
+        <div class="product-rating" *ngIf="reviewsCount > 0; else noReviewsSummary">
+          <span class="stars">{{ averageRating | number:'1.1-1' }} / 5</span>
+          <span class="review-count">({{ reviewsCount }} avis)</span>
+        </div>
+        <ng-template #noReviewsSummary>
+          <div class="product-rating">
+            <span class="review-count">Aucun avis pour le moment</span>
+          </div>
+        </ng-template>
+
+        <p class="product-price">
+          <span class="current-price">{{ formatPrice(produit.prix) }}</span>
+          <span *ngIf="produit.prix > 100" class="old-price">{{ formatPrice(produit.prix + 5000) }}</span>
+        </p>
+
+        <div class="stock-status" [class.in-stock]="produit.quantite > 0" [class.out-of-stock]="produit.quantite <= 0">
+          <i class="fas" [class.fa-check-circle]="produit.quantite > 0"
+            [class.fa-times-circle]="produit.quantite <= 0"></i>
+          {{ produit.quantite > 0 ? 'En stock' : 'Rupture de stock' }}
+        </div>
+
+        <p class="product-description">
+          {{ produit.description }}
+        </p>
+
+        <div class="product-options">
+          <div class="quantity-selector">
+            <label for="quantity">Quantité:</label>
+            <div class="quantity-controls">
+              <button class="quantity-btn" (click)="decrementQuantity()">-</button>
+              <input type="number" id="quantity" [(ngModel)]="quantity" min="1" [max]="produit.quantite"
+                class="quantity-input" />
+              <button class="quantity-btn" (click)="incrementQuantity()">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-actions-detail">
+          <button class="btn-add-to-cart" (click)="addToCart()" [disabled]="isOutOfStock(produit.quantite)">
+            <i class="fas fa-shopping-cart"></i> Ajouter au panier
+          </button>
+        </div>
+
+        <div class="product-meta">
+          <span>SKU: ALM-{{ produit.id }}</span>
+          <span>Type: {{ produit.type }}</span>
+          <span>Unité: {{ produit.unite }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="product-reviews-section">
+    <div class="container">
+      <div class="reviews-header">
+        <div>
+          <h2>Avis des clients</h2>
+          <p class="reviews-subtitle" *ngIf="reviewsCount > 0; else noReviewsSubtitle">
+            Basé sur {{ reviewsCount }} avis vérifiés
+          </p>
+          <ng-template #noReviewsSubtitle>
+            <p class="reviews-subtitle">
+              Aucun avis pour le moment. Les avis apparaîtront ici dès qu'un client aura commandé et noté ce produit.
+            </p>
+          </ng-template>
+        </div>
+        <button class="btn-primary reviews-cta" (click)="goToOrdersForReview()">
+          Voir mes commandes pour laisser un avis
+        </button>
+      </div>
+
+      <div class="reviews-main-grid" *ngIf="reviewsCount > 0">
+        <div class="rating-overview">
+          <div class="rating-score">{{ averageRating | number:'1.1-1' }}</div>
+          <div class="rating-outof">/ 5</div>
+          <div class="rating-stars">★★★★★</div>
+          <div class="rating-count">{{ reviewsCount }} avis</div>
+        </div>
+
+        <ul class="rating-breakdown">
+          <li *ngFor="let star of [5,4,3,2,1]">
+            <span class="star-label">{{ star }} ★</span>
+            <div class="bar">
+              <div class="bar-fill" [style.width]="getRatingPercentage(star) + '%'"></div>
+            </div>
+            <span class="star-count">{{ ratingBreakdown[star] || 0 }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="review-list" *ngIf="reviewsCount > 0; else noReviewsBlock">
+        <div class="single-review" *ngFor="let a of avis">
+          <div class="review-header">
+            <span class="stars">{{ a.note }}/5</span>
+            <span class="review-author">Par {{ a.user?.name || 'Client' }}</span>
+            <span class="review-date" *ngIf="a.created_at">{{ a.created_at | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <p class="review-text">
+            {{ a.commentaire || 'Aucun commentaire fourni.' }}
+          </p>
+        </div>
+      </div>
+      <ng-template #noReviewsBlock>
+        <p class="review-text no-reviews-text">
+          Aucun avis pour le moment. Vous pourrez laisser un avis une fois votre commande livrée.
+        </p>
+      </ng-template>
+    </div>
+  </section>
+
+  <section class="product-extra-details">
+    <div class="container">
+      <h2>Détails du Produit</h2>
+      <div class="tabs">
+        <button class="tab-button" [class.active]="activeTab === 'description'"
+          (click)="setActiveTab('description')">Description</button>
+        <button class="tab-button" [class.active]="activeTab === 'specifications'"
+          (click)="setActiveTab('specifications')">Spécifications</button>
+      </div>
+
+      <div id="description" class="tab-content" [class.active]="activeTab === 'description'">
+        <h3>Description détaillée</h3>
+        <p *ngIf="produit?.description; else noDescription">
+          {{ produit.description }}
+        </p>
+        <ng-template #noDescription>
+          <p>Aucune description détaillée n'a encore été renseignée pour ce produit.</p>
+        </ng-template>
+        <ul>
+          <li *ngIf="produit?.matiere">Matière : {{ produit.matiere }}</li>
+          <li *ngIf="produit?.motif">Motif : {{ produit.motif }}</li>
+          <li *ngIf="produit?.couleur">Couleur principale : {{ produit.couleur }}</li>
+          <li *ngIf="produit?.origine">Origine : {{ produit.origine }}</li>
+        </ul>
+      </div>
+
+      <div id="specifications" class="tab-content" [class.active]="activeTab === 'specifications'">
+        <h3>Spécifications Techniques</h3>
+        <p>
+          <span *ngIf="produit">Prix : {{ formatPrice(produit.prix) }}<br /></span>
+          <span *ngIf="produit?.quantite != null">Quantité disponible : {{ produit.quantite }} {{ produit.unite
+            }}<br /></span>
+          <span *ngIf="produit?.type">Type : {{ produit.type }}</span><br />
+          <span *ngIf="produit?.categorie?.nom">Catégorie : {{ produit.categorie.nom }}<br /></span>
+          <span *ngIf="produit?.largeur">Largeur : {{ produit.largeur }}<br /></span>
+          <span *ngIf="produit?.vendu_au_metre">Vendu au mètre<br /></span>
+          <span *ngIf="produit?.prix_au_metre != null">Prix au mètre : {{ formatPrice(produit.prix_au_metre!)
+            }}<br /></span>
+          <span *ngIf="produit?.poids">Poids : {{ produit.poids }}<br /></span>
+          <span *ngIf="produit?.origine">Origine : {{ produit.origine }}<br /></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="related-products-section">
+    <div class="container">
+      <h2>Produits Similaires</h2>
+      <p class="section-subtitle">Découvrez d'autres tissus qui pourraient vous plaire.</p>
+      <div class="products-grid">
+        <div *ngIf="relatedProducts.length === 0" class="empty-state-related">
+          <p>Aucun produit similaire trouvé pour l'instant.</p>
+        </div>
+
+        <div *ngFor="let prod of relatedProducts" class="product-card">
+          <div class="product-image-wrapper" (click)="prod.id && goToProductDetail(prod.id)">
+            <img [src]="getImageUrl(prod.image)"
+              [alt]="prod.nom" (error)="onImageError($event)" />
+          </div>
+
+          <div class="product-info">
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]">★</span>
+            </div>
+
+            <h3 class="product-name" (click)="prod.id && goToProductDetail(prod.id)">
+              {{ prod.nom }}
+            </h3>
+            <p class="product-type">{{ prod.type }}</p>
+            <p class="product-unit" *ngIf="prod.unite">Unité : {{ prod.unite }}</p>
+
+            <div class="price-container">
+              <span class="current-price">{{ formatPrice(prod.prix) }}</span>
+            </div>
+
+            <div class="product-actions">
+              <button class="btn-details" type="button" (click)="prod.id && goToProductDetail(prod.id)">
+                <i class="fas fa-info-circle"></i> Détails
+              </button>
+
+              <button type="button" class="btn-add-cart" (click)="addSimilarToCart(prod)"
+                [disabled]="isOutOfStock(prod.quantite)">
+                <i class="fas fa-shopping-cart"></i>
+                {{ isOutOfStock(prod.quantite) ? 'Rupture' : 'Ajouter' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modale de connexion lorsqu'on clique sur "Ajouter au panier" sans être connecté -->
+<div class="login-prompt-overlay" *ngIf="showLoginPrompt">
+  <div class="login-prompt-modal">
+    <button type="button" class="login-prompt-close" (click)="closeLoginPrompt()">
+      &times;
+    </button>
+    <h3 class="login-prompt-title">Connectez-vous pour continuer</h3>
+    <p class="login-prompt-text">
+      Pour ajouter ce produit à votre panier et passer commande, merci de vous connecter à votre compte Ahma‑Dile.
+    </p>
+    <div class="login-prompt-actions">
+      <button type="button" class="login-prompt-secondary" (click)="closeLoginPrompt()">
+        Continuer la visite
+      </button>
+      <button type="button" class="login-prompt-primary" (click)="goToLogin()">
+        Se connecter
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!produit" class="loading-state">
+  <p>Chargement du produit ou produit introuvable...</p>
+</div>

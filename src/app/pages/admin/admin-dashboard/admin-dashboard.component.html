@@ -1,0 +1,482 @@
+<section class="min-h-screen bg-slate-50 pt-0 pb-8 px-4 md:px-8">  
+  <div class="max-w-6xl mx-auto space-y-6">
+    <!-- Header principal -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-blue-700 mb-1">Tableau de bord</h1>
+        <p class="text-slate-600 max-w-2xl text-sm">
+          Vue d'ensemble de l'activité de la boutique&nbsp;: catalogue, commandes et clients. Utilisez ce
+          tableau de bord pour suivre vos indicateurs clés.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 bg-white rounded-xl shadow-sm px-4 py-3 border border-slate-100">
+        <div class="flex flex-col text-right">
+          <span class="text-xs uppercase tracking-wide text-slate-400">Aujourd'hui</span>
+          <span class="text-sm font-semibold text-slate-700">{{ (stats.nombreCommandes || 0) }} commande(s)</span>
+          <span class="text-xs text-slate-500">Ventes : {{ stats.ventesJour | number:'1.0-0' }} XOF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ligne d'analyse : rapport, mini bar chart, donut utilisateurs -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Rapport général (statique, design) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between mb-1">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Rapport général</p>
+            <p class="text-sm font-semibold text-slate-900">Vue synthétique des ventes</p>
+          </div>
+          <span class="inline-flex items-center rounded-full bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-600">
+            Quotidien
+          </span>
+        </div>
+
+        <div class="flex flex-col gap-3 mt-2">
+          <div>
+            <p class="text-xs text-slate-500 mb-1">Ventes du jour</p>
+            <p class="text-2xl font-bold text-slate-900">{{ stats.ventesJour | number:'1.0-0' }} XOF</p>
+          </div>
+          <div class="grid grid-cols-2 gap-3 text-[11px] text-slate-500">
+            <div>
+              <p class="font-semibold text-slate-700">Ventes de la semaine</p>
+              <p class="text-slate-800">{{ stats.ventesSemaine | number:'1.0-0' }} XOF</p>
+            </div>
+            <div>
+              <p class="font-semibold text-slate-700">Ventes du mois</p>
+              <p class="text-slate-800">{{ stats.ventesMois | number:'1.0-0' }} XOF</p>
+            </div>
+          </div>
+          <div class="text-right text-[11px] text-slate-500">
+            <p>Commandes : <span class="font-semibold text-slate-800">{{ stats.nombreCommandes }}</span></p>
+            <p>Clients : <span class="font-semibold text-slate-800">{{ stats.nombreClients }}</span></p>
+            <p>Produits : <span class="font-semibold text-slate-800">{{ stats.nombreProduits }}</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini graphique visiteurs (barres statiques) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between mb-1">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Visiteurs</p>
+            <p class="text-sm font-semibold text-slate-900">Trafic récent</p>
+          </div>
+          <span class="text-xs text-slate-400">7 derniers jours</span>
+        </div>
+
+        <div class="mt-2 h-28 flex items-end gap-2">
+          <div class="flex-1 bg-slate-50 rounded-lg flex items-end justify-center">
+            <div class="w-3 rounded-t-lg bg-blue-100 h-6"></div>
+          </div>
+          <div class="flex-1 bg-slate-50 rounded-lg flex items-end justify-center">
+            <div class="w-3 rounded-t-lg bg-blue-300 h-10"></div>
+          </div>
+          <div class="flex-1 bg-slate-50 rounded-lg flex items-end justify-center">
+            <div class="w-3 rounded-t-lg bg-blue-500 h-16"></div>
+          </div>
+          <div class="flex-1 bg-slate-50 rounded-lg flex items-end justify-center">
+            <div class="w-3 rounded-t-lg bg-blue-400 h-12"></div>
+          </div>
+          <div class="flex-1 bg-slate-50 rounded-lg flex items-end justify-center">
+            <div class="w-3 rounded-t-lg bg-blue-200 h-8"></div>
+          </div>
+        </div>
+        <p class="mt-1 text-[11px] text-slate-500">Illustration statique du trafic, prête à être reliée à de vraies données.</p>
+      </div>
+
+      <!-- Donut utilisateurs -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between mb-1">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Utilisateurs</p>
+            <p class="text-sm font-semibold text-slate-900">Par type de compte</p>
+          </div>
+          <span class="text-xs text-slate-400">Vue illustrée</span>
+        </div>
+
+        <div class="flex items-center gap-4 mt-1">
+          <!-- Cercle type donut -->
+          <div class="relative h-24 w-24 flex items-center justify-center">
+            <svg viewBox="0 0 36 36" class="h-24 w-24 -rotate-90">
+              <circle cx="18" cy="18" r="15" fill="none" class="stroke-slate-100" stroke-width="5"></circle>
+              <circle cx="18" cy="18" r="15" fill="none" class="stroke-blue-500" stroke-width="5" stroke-dasharray="60 40" stroke-linecap="round"></circle>
+              <circle cx="18" cy="18" r="15" fill="none" class="stroke-orange-400" stroke-width="5" stroke-dasharray="20 80" stroke-dashoffset="60" stroke-linecap="round"></circle>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <p class="text-[10px] text-slate-400">Total</p>
+              <p class="text-sm font-semibold text-slate-900">{{ stats.nombreClients }}</p>
+            </div>
+          </div>
+
+          <!-- Légende -->
+          <div class="flex-1 space-y-2 text-[11px]">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                <span class="text-slate-600">Clients</span>
+              </div>
+              <span class="font-semibold text-slate-800">~70%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full bg-orange-400"></span>
+                <span class="text-slate-600">Admins / vendeurs</span>
+              </div>
+              <span class="font-semibold text-slate-800">~30%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alertes / chargement -->
+    <div *ngIf="apiError" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ apiError }}
+    </div>
+
+    <div *ngIf="isLoading" class="flex items-center gap-2 text-slate-600">
+      <span class="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
+      <span>Chargement des statistiques...</span>
+    </div>
+
+    <!-- Cartes de statistiques principales -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Produits</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">
+            Catalogue
+          </span>
+        </div>
+        <p class="text-2xl font-bold text-slate-900">{{ stats.nombreProduits }}</p>
+        <p class="text-xs text-slate-500">Nombre total de produits actifs dans la boutique.</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Commandes</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">
+            Activité
+          </span>
+        </div>
+        <p class="text-2xl font-bold text-emerald-600">{{ stats.nombreCommandes }}</p>
+        <p class="text-xs text-slate-500">Total de commandes enregistrées sur la plateforme.</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Clients</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-orange-50 text-orange-700">
+            Fidélisation
+          </span>
+        </div>
+        <p class="text-2xl font-bold text-orange-500">{{ stats.nombreClients }}</p>
+        <p class="text-xs text-slate-500">Nombre de clients ayant déjà passé au moins une commande.</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Vue rapide</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-50 text-slate-600">
+            Résumé
+          </span>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          <span class="font-semibold">{{ stats.nombreProduits }}</span> produits, 
+          <span class="font-semibold">{{ stats.nombreCommandes }}</span> commandes et
+          <span class="font-semibold">{{ stats.nombreClients }}</span> clients au total.
+        </p>
+      </div>
+    </div>
+
+    <!-- Deuxième rangée : commandes récentes / produits populaires -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Commandes récentes (aperçu statique) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 lg:col-span-2">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-sm font-semibold text-slate-800">Activité récente des commandes</h2>
+            <p class="text-xs text-slate-500">Un aperçu rapide des dernières commandes enregistrées.</p>
+          </div>
+          <a
+            routerLink="/admin/commandes"
+            class="text-xs font-medium text-blue-600 hover:text-blue-700"
+          >
+            Voir toutes les commandes
+          </a>
+        </div>
+
+        <div class="border border-slate-100 rounded-lg overflow-hidden">
+          <table class="min-w-full text-xs">
+            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wide">
+              <tr>
+                <th class="px-3 py-2 text-left">Référence</th>
+                <th class="px-3 py-2 text-left">Client</th>
+                <th class="px-3 py-2 text-left">Statut</th>
+                <th class="px-3 py-2 text-right">Montant</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr class="hover:bg-slate-50/70">
+                <td class="px-3 py-2 font-medium text-slate-800">CMD-2025-001</td>
+                <td class="px-3 py-2 text-slate-600">Client vitrine</td>
+                <td class="px-3 py-2">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">
+                    Livrée
+                  </span>
+                </td>
+                <td class="px-3 py-2 text-right font-semibold text-slate-800">45 000 XOF</td>
+              </tr>
+              <tr class="hover:bg-slate-50/70">
+                <td class="px-3 py-2 font-medium text-slate-800">CMD-2025-002</td>
+                <td class="px-3 py-2 text-slate-600">Client vitrine</td>
+                <td class="px-3 py-2">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">
+                    En préparation
+                  </span>
+                </td>
+                <td class="px-3 py-2 text-right font-semibold text-slate-800">18 500 XOF</td>
+              </tr>
+              <tr class="hover:bg-slate-50/70">
+                <td class="px-3 py-2 font-medium text-slate-800">CMD-2025-003</td>
+                <td class="px-3 py-2 text-slate-600">Client vitrine</td>
+                <td class="px-3 py-2">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-orange-50 text-orange-700">
+                    En attente
+                  </span>
+                </td>
+                <td class="px-3 py-2 text-right font-semibold text-slate-800">9 900 XOF</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bloc produits populaires (statique, design) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800">Produits mis en avant</h2>
+          <a routerLink="/admin/produits" class="text-xs font-medium text-blue-600 hover:text-blue-700">
+            Gérer
+          </a>
+        </div>
+
+        <ul class="space-y-2 text-xs">
+          <li class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="h-7 w-7 rounded-full bg-slate-100"></span>
+              <div>
+                <p class="font-medium text-slate-800">Tissu wax coloré</p>
+                <p class="text-[11px] text-slate-500">Référence vitrine</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-emerald-600">En stock</span>
+          </li>
+          <li class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="h-7 w-7 rounded-full bg-slate-100"></span>
+              <div>
+                <p class="font-medium text-slate-800">Bobines de fil</p>
+                <p class="text-[11px] text-slate-500">Mercerie</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-orange-600">Faible stock</span>
+          </li>
+          <li class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="h-7 w-7 rounded-full bg-slate-100"></span>
+              <div>
+                <p class="font-medium text-slate-800">Accessoires couture</p>
+                <p class="text-[11px] text-slate-500">Boutons, fermetures...</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-500">En vitrine</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Raccourcis de gestion -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <a
+        routerLink="/admin/produits"
+        class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-1 hover:border-blue-300 hover:shadow-md transition"
+      >
+        <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Catalogue</span>
+        <span class="text-sm font-semibold text-slate-800">Produits</span>
+        <span class="text-xs text-slate-500">Ajouter, modifier ou désactiver des produits.</span>
+      </a>
+
+      <a
+        routerLink="/admin/categories"
+        class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-1 hover:border-blue-300 hover:shadow-md transition"
+      >
+        <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Organisation</span>
+        <span class="text-sm font-semibold text-slate-800">Catégories</span>
+        <span class="text-xs text-slate-500">Structurer les familles de produits.</span>
+      </a>
+
+      <a
+        routerLink="/admin/commandes"
+        class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-1 hover:border-blue-300 hover:shadow-md transition"
+      >
+        <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Ventes</span>
+        <span class="text-sm font-semibold text-slate-800">Commandes</span>
+        <span class="text-xs text-slate-500">Suivre et mettre à jour les commandes.</span>
+      </a>
+
+      <a
+        routerLink="/admin/utilisateurs"
+        class="bg-white rounded-xl shadow-sm border border-slate-100 px-4 py-4 flex flex-col gap-1 hover:border-blue-300 hover:shadow-md transition"
+      >
+        <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Comptes</span>
+        <span class="text-sm font-semibold text-slate-800">Utilisateurs</span>
+        <span class="text-xs text-slate-500">Gérer les rôles et l'activité des comptes.</span>
+      </a>
+    </div>
+
+    <!-- Notes importantes & encarts promotionnels -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 lg:col-span-2 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800">Notes importantes</h2>
+          <button
+            type="button"
+            class="text-xs font-medium text-blue-600 hover:text-blue-700"
+          >
+            Voir plus
+          </button>
+        </div>
+        <p class="text-xs text-slate-500">
+          Utilisez cet espace pour garder une trace des informations clés liées à votre boutique
+          (promotions en cours, fournisseurs importants, rappels logistiques...).
+        </p>
+      </div>
+
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm p-4 text-white flex flex-col justify-between min-h-[120px]">
+        <div>
+          <p class="text-xs uppercase tracking-wide opacity-80 mb-1">Conseil</p>
+          <p class="text-sm font-semibold">Mettez en avant vos meilleures ventes</p>
+          <p class="text-[11px] opacity-80 mt-1">
+            Optimisez votre page d'accueil avec les tissus et accessoires les plus demandés.
+          </p>
+        </div>
+        <button
+          type="button"
+          routerLink="/admin/produits"
+          class="mt-3 inline-flex items-center justify-center rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-medium hover:bg-white/20"
+        >
+          Gérer la vitrine
+        </button>
+      </div>
+    </div>
+
+    <!-- Schedules / Activités récentes / Transactions -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+      <!-- Agenda simplifié -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800">Planning</h2>
+          <span class="text-xs text-slate-400">Avril</span>
+        </div>
+
+        <div class="grid grid-cols-7 gap-1 text-[11px] text-center">
+          <span class="text-slate-400">L</span>
+          <span class="text-slate-400">M</span>
+          <span class="text-slate-400">M</span>
+          <span class="text-slate-400">J</span>
+          <span class="text-slate-400">V</span>
+          <span class="text-slate-400">S</span>
+          <span class="text-slate-400">D</span>
+
+          <span class="py-1"></span>
+          <span class="py-1">1</span>
+          <span class="py-1">2</span>
+          <span class="py-1">3</span>
+          <span class="py-1">4</span>
+          <span class="py-1">5</span>
+          <span class="py-1">6</span>
+          <span class="py-1">7</span>
+          <span class="py-1 rounded-full bg-blue-50 text-blue-700 font-semibold">8</span>
+          <span class="py-1">9</span>
+          <span class="py-1">10</span>
+          <span class="py-1">11</span>
+          <span class="py-1">12</span>
+          <span class="py-1">13</span>
+          <span class="py-1">14</span>
+        </div>
+
+        <div class="mt-2 space-y-1 text-[11px]">
+          <p class="text-slate-500">8 avril – Préparer une nouvelle campagne de promotion.</p>
+          <p class="text-slate-500">12 avril – Vérifier les stocks de tissus phares.</p>
+        </div>
+      </div>
+
+      <!-- Activités récentes -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800">Activités récentes</h2>
+          <span class="text-xs text-blue-600 cursor-default">Aujourd'hui</span>
+        </div>
+
+        <ul class="space-y-2 text-[11px]">
+          <li class="flex items-start justify-between gap-2">
+            <div>
+              <p class="font-semibold text-slate-800">Nouvelle commande créée</p>
+              <p class="text-slate-500">Commande vitrine ajoutée pour test.</p>
+            </div>
+            <span class="text-slate-400">10:21</span>
+          </li>
+          <li class="flex items-start justify-between gap-2">
+            <div>
+              <p class="font-semibold text-slate-800">Produit mis à jour</p>
+              <p class="text-slate-500">Stock ajusté sur un tissu populaire.</p>
+            </div>
+            <span class="text-slate-400">09:05</span>
+          </li>
+          <li class="flex items-start justify-between gap-2">
+            <div>
+              <p class="font-semibold text-slate-800">Nouveau client inscrit</p>
+              <p class="text-slate-500">Compte client de démonstration.</p>
+            </div>
+            <span class="text-slate-400">Hier</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Transactions (liste) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800">Transactions</h2>
+          <span class="text-xs text-slate-400">Résumé</span>
+        </div>
+
+        <ul class="space-y-2 text-[11px]">
+          <li class="flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-slate-800">Commande vitrine #001</p>
+              <p class="text-slate-500">Paiement réussi</p>
+            </div>
+            <span class="font-semibold text-emerald-600">+45 000 XOF</span>
+          </li>
+          <li class="flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-slate-800">Remboursement test</p>
+              <p class="text-slate-500">Annulation de commande</p>
+            </div>
+            <span class="font-semibold text-red-500">-10 000 XOF</span>
+          </li>
+          <li class="flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-slate-800">Commande vitrine #002</p>
+              <p class="text-slate-500">Paiement en attente</p>
+            </div>
+            <span class="font-semibold text-orange-500">+18 500 XOF</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

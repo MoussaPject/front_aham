@@ -1,0 +1,11 @@
+/* src/app/app.component.css */
+
+.main-content-wrapper {
+  /* Conteneur principal de page. Le décalage sous la navbar est appliqué seulement si la classe
+     .with-navbar-offset est présente (quand showNav est vrai). */
+  min-height: calc(100vh - 64px - var(--footer-height, 150px));
+}
+
+.main-content-wrapper.with-navbar-offset {
+  padding-top: 64px; /* marge sous le header uniquement quand la navbar est affichée */
+}

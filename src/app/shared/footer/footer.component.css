@@ -1,0 +1,140 @@
+/* Le sélecteur :host cible la balise <app-footer> elle-même */
+:host {
+  --primary-color: #2c3e50;
+  --secondary-color: #f68b1e;
+  --text-light: #ecf0f1;
+  --footer-bg-dark: #1a202c;
+  --footer-text-color: #a0aec0;
+  --footer-link-hover: #f68b1e;
+  --footer-border-color: rgba(255, 255, 255, 0.1);
+
+  /* Force le footer à occuper toute la largeur et à se comporter comme un bloc */
+  display: block;
+  width: 100%;
+
+  /* Sécurité : si le parent est un Flexbox, on empêche le footer de rétrécir */
+  flex-shrink: 0;
+
+  /* Optionnel : si tu veux qu'il soit collant même si le contenu est court */
+  margin-top: auto;
+}
+
+.main-footer {
+  background-color: var(--footer-bg-dark);
+  color: var(--footer-text-color);
+  padding: 4rem 0 0;
+  font-family: 'Inter', sans-serif;
+  border-top: 5px solid var(--primary-color);
+}
+
+.footer-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2.5rem;
+  padding-bottom: 3rem;
+}
+
+.footer-section h3 {
+  color: var(--text-light);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.footer-section h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 3px;
+  background-color: var(--secondary-color);
+  border-radius: 2px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.7rem;
+}
+
+.footer-section ul li a {
+  color: var(--footer-text-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.footer-section ul li a:hover {
+  color: var(--footer-link-hover);
+  transform: translateX(5px);
+}
+
+.social-icons {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.social-icon {
+  color: var(--footer-text-color);
+  width: 35px;
+  height: 35px;
+  border: 1px solid var(--footer-border-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.social-icon:hover {
+  background: var(--secondary-color);
+  color: white;
+  transform: translateY(-3px);
+}
+
+.newsletter-form input {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 5px;
+  border: 1px solid var(--footer-border-color);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.btn-subscribe {
+  background: var(--secondary-color);
+  color: white;
+  border: none;
+  padding: 0.7rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--footer-border-color);
+  padding: 1.5rem 0;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    width: 95%;
+  }
+}

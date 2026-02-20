@@ -1,0 +1,161 @@
+<section class="space-y-6">
+
+  <!-- ================= HEADER ================= -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-slate-900">
+        Catalogue – Tissus & Mercerie
+      </h1>
+      <p class="text-sm text-slate-500">
+        Gérez les tissus, accessoires et articles de mercerie de la boutique Ahma-Dile.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg
+             bg-gradient-to-r from-orange-500 to-amber-500
+             text-white text-sm font-medium shadow hover:shadow-md transition"
+      (click)="goToAdd()"
+    >
+      <i class="fas fa-plus"></i>
+      Nouveau produit
+    </button>
+  </header>
+
+  <!-- ================= BARRE DE CONTROLE ================= -->
+  <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+
+      <!-- Recherche -->
+      <div class="relative">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input
+          type="text"
+          placeholder="Rechercher un produit…"
+          [(ngModel)]="searchTerm"
+          class="w-full pl-9 pr-3 py-2 rounded-md border border-slate-300 text-sm
+                 focus:ring-orange-500 focus:border-orange-500"
+        />
+      </div>
+
+      <!-- Filtre type -->
+      <select
+        [(ngModel)]="filterType"
+        class="w-full py-2 px-3 rounded-md border border-slate-300 text-sm
+               focus:ring-orange-500 focus:border-orange-500"
+      >
+        <option value="">Tous les types</option>
+        <option value="tissu">Tissus</option>
+        <option value="mercerie">Mercerie</option>
+      </select>
+
+      <!-- Filtre stock -->
+      <select
+        [(ngModel)]="filterStock"
+        class="w-full py-2 px-3 rounded-md border border-slate-300 text-sm
+               focus:ring-orange-500 focus:border-orange-500"
+      >
+        <option value="">Tous les stocks</option>
+        <option value="disponible">En stock</option>
+        <option value="faible">Stock faible</option>
+        <option value="rupture">Rupture</option>
+      </select>
+
+      <!-- Tri -->
+      <select
+        [(ngModel)]="sortBy"
+        class="w-full py-2 px-3 rounded-md border border-slate-300 text-sm
+               focus:ring-orange-500 focus:border-orange-500"
+      >
+        <option value="recent">Plus récents</option>
+        <option value="prix">Prix</option>
+        <option value="stock">Stock</option>
+        <option value="nom">Nom</option>
+      </select>
+
+    </div>
+  </div>
+
+  <!-- ================= ETATS ================= -->
+  <div *ngIf="apiError" class="rounded-md bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">
+    {{ apiError }}
+  </div>
+
+  <div *ngIf="isLoading" class="grid md:grid-cols-3 gap-4">
+    <div *ngFor="let i of [1,2,3,4,5,6]"
+         class="h-56 rounded-xl bg-slate-100 animate-pulse"></div>
+  </div>
+
+  <!-- ================= EMPTY STATE ================= -->
+  <div *ngIf="!isLoading && filteredProduits.length === 0"
+       class="flex flex-col items-center justify-center gap-3 py-14
+              border border-dashed border-slate-200 rounded-xl bg-slate-50">
+    <i class="fas fa-box-open text-3xl text-slate-400"></i>
+    <p class="text-slate-600 text-sm">
+      Aucun produit ne correspond aux critères.
+    </p>
+  </div>
+
+  <!-- ================= GRID PRODUITS ================= -->
+  <div *ngIf="!isLoading && filteredProduits.length"
+       class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+    <article *ngFor="let p of filteredProduits"
+             class="bg-white rounded-xl border border-slate-100 shadow-sm
+                    hover:shadow-lg hover:-translate-y-0.5 transition flex flex-col overflow-hidden">
+
+      <!-- Image -->
+      <div class="relative h-44 bg-slate-100 overflow-hidden">
+        <img
+          [src]="p.image ? 'http://127.0.0.1:8000/storage/' + p.image : 'assets/images/no-image.jpg'"
+          [alt]="p.nom"
+          class="w-full h-full object-cover"
+        />
+
+        <!-- Badges -->
+        <div class="absolute top-2 left-2 flex flex-col gap-1">
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium text-white bg-red-500"
+                *ngIf="p.quantite === 0">Rupture</span>
+
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium text-white bg-amber-500"
+                *ngIf="p.quantite > 0 && p.quantite <= 5">Stock faible</span>
+        </div>
+      </div>
+
+      <!-- Contenu -->
+      <div class="p-4 flex flex-col gap-2 flex-1">
+        <h2 class="text-sm font-semibold text-slate-900 truncate">
+          {{ p.nom }}
+        </h2>
+
+        <div class="text-xs text-slate-500">
+          <span class="uppercase font-medium">{{ p.type }}</span>
+          • {{ p.quantite }} {{ p.unite || 'pièce(s)' }}
+        </div>
+
+        <div class="text-base font-semibold text-orange-600">
+          {{ p.prix | number:'1.0-0' }} XOF
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-auto pt-3 flex justify-end gap-2">
+          <button
+            class="px-3 py-1.5 text-xs rounded-md border border-slate-200
+                   hover:bg-slate-50"
+            (click)="goToEdit(p.id)">
+            <i class="fas fa-edit mr-1"></i> Modifier
+          </button>
+
+          <button
+            class="px-3 py-1.5 text-xs rounded-md bg-red-500 text-white
+                   hover:bg-red-600"
+            (click)="deleteProduit(p.id)">
+            <i class="fas fa-trash mr-1"></i> Supprimer
+          </button>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>

@@ -1,0 +1,369 @@
+<div class="product-page">
+  <!-- Section En-tête de Produit E-commerce (Hero Banner avec carrousel) -->
+<section class="relative w-full h-[90vh] min-h-[520px] overflow-hidden landing-hero">
+
+  <!-- Slides background -->
+  <div class="absolute inset-0">
+    <div
+      *ngFor="let slide of heroSlides; let i = index"
+      class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out landing-slide"
+      [class.opacity-100]="i === currentHeroIndex"
+      [class.opacity-0]="i !== currentHeroIndex"
+      [style.backgroundImage]="'url(' + slide + ')'">
+    </div>
+  </div>
+
+  <!-- Overlay with subtle gradient -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 h-full flex items-center">
+    <div class="container mx-auto px-6 landing-content max-w-3xl text-center">
+
+      <span class="block mb-4 text-sm tracking-widest uppercase text-white/80">
+        Ahma-Dile • Tissus & Mercerie
+      </span>
+
+      <h1 class="text-white font-extrabold leading-tight mb-6
+                 text-4xl sm:text-5xl md:text-6xl lg:text-7xl drop-shadow-lg">
+        Imaginez, <span class="text-pink-400">cousez</span>, créez.
+      </h1>
+
+      <p class="text-white/90 text-base md:text-lg leading-relaxed mb-10 drop-shadow-md">
+        Wax, bazin, dentelle, mercerie et accessoires soigneusement sélectionnés
+        pour donner vie à toutes vos créations.
+      </p>
+
+      <!-- Filtres -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <button
+          (click)="setFilter('all')"
+          [class.bg-white]="activeFilter === 'all'"
+          [class.text-black]="activeFilter === 'all'"
+          [class.text-white]="activeFilter !== 'all'"
+          class="px-6 py-2 rounded-full border border-white/60
+                 hover:bg-white hover:text-black transition-all duration-300 shadow-sm">
+          Tout
+        </button>
+
+        <button
+          (click)="setFilter('tissu')"
+          [class.bg-white]="activeFilter === 'tissu'"
+          [class.text-black]="activeFilter === 'tissu'"
+          class="px-6 py-2 rounded-full border border-white/60 text-white
+                 hover:bg-white hover:text-black transition-all duration-300 shadow-sm">
+          Tissus
+        </button>
+
+        <button
+          (click)="setFilter('mercerie')"
+          [class.bg-white]="activeFilter === 'mercerie'"
+          [class.text-black]="activeFilter === 'mercerie'"
+          class="px-6 py-2 rounded-full border border-white/60 text-white
+                 hover:bg-white hover:text-black transition-all duration-300 shadow-sm">
+          Mercerie
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <button
+    (click)="prevHeroSlide()"
+    class="absolute left-6 top-1/2 -translate-y-1/2 z-10
+           w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white
+           hover:bg-white/50 hover:text-black transition flex items-center justify-center text-2xl">
+    ‹
+  </button>
+
+  <button
+    (click)="nextHeroSlide()"
+    class="absolute right-6 top-1/2 -translate-y-1/2 z-10
+           w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white
+           hover:bg-white/50 hover:text-black transition flex items-center justify-center text-2xl">
+    ›
+  </button>
+
+  <!-- Indicators -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+
+  </div>
+
+</section>
+
+
+
+  <!-- Section dédiée au bouton Ajouter un produit (Admin uniquement) -->
+  <section class="admin-actions-section" *ngIf="isAdmin">
+    <div class="container">
+      <div class="add-product-card">
+        <h3>Gérez votre inventaire</h3>
+        <p>Zone réservée à l'équipe Ahma-Dile pour ajouter et organiser les produits.</p>
+
+        <button
+          type="button"
+          class="btn-add-product"
+          routerLink="/admin/produits/ajouter"
+        >
+          <i class="fas fa-plus-circle"></i> Ajouter un nouveau produit
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Liste de Produits E-commerce (Main Content) -->
+  <div class="container main-content" id="products-section">
+
+    <div class="catalog-layout">
+      <aside class="filters-sidebar">
+        <div class="filters-header">
+          <h3>Filtres</h3>
+          <button class="filters-reset" type="button" (click)="resetFilters()" [disabled]="!hasActiveFilters()">
+            Réinitialiser
+          </button>
+        </div>
+
+        <div class="filter-block">
+          <label class="filter-label">Catégorie</label>
+          <select [ngModel]="activeCategoryId" (change)="onCategoryChange($event)">
+            <option value="all">Toutes les catégories</option>
+            <option *ngFor="let c of categories" [value]="c.id">{{ c.nom }}</option>
+          </select>
+        </div>
+
+        <div class="filter-block">
+          <label class="filter-label">Type</label>
+          <div class="filter-buttons vertical">
+            <button type="button" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">Tous</button>
+            <button
+              type="button"
+              *ngFor="let type of getUniqueTypes()"
+              [class.active]="activeFilter === type"
+              (click)="setFilter(type)"
+            >
+              {{type}}
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-block">
+          <label class="checkbox-row">
+            <input type="checkbox" [(ngModel)]="inStockOnly" (change)="filterProducts()" />
+            <span>En stock uniquement</span>
+          </label>
+        </div>
+
+        <div class="filter-block">
+          <label class="filter-label">Prix</label>
+          <div class="price-range">
+            <input type="number" [(ngModel)]="minPrice" (input)="filterProducts()" placeholder="Min" />
+            <input type="number" [(ngModel)]="maxPrice" (input)="filterProducts()" placeholder="Max" />
+          </div>
+        </div>
+
+        <div class="filter-block">
+          <label class="checkbox-row">
+            <input type="checkbox" [(ngModel)]="promoOnly" (change)="filterProducts()" />
+            <span>En promotion uniquement</span>
+          </label>
+        </div>
+      </aside>
+
+      <section class="catalog-content">
+        <div class="results-meta">
+          <span class="results-count">{{ filteredProduits.length }} produit(s)</span>
+        </div>
+
+        <div class="products-grid">
+          <div *ngFor="let produit of paginatedProduits; trackBy: trackByFn" class="product-card animate-on-scroll" #productCard>
+
+            <div class="product-badges">
+              <div class="product-badge" *ngIf="isLowStock(produit.quantite)">
+                Stock limité
+              </div>
+              <div class="product-badge discount" *ngIf="produit.en_promotion">
+                Promo
+              </div>
+            </div>
+
+            <div class="product-image-wrapper">
+              <img
+                [src]="getImageUrl(produit.image)"
+                [alt]="produit.nom"
+                (error)="onImageError($event)"
+              />
+              <button type="button" class="quick-view" (click)="quickView(produit)">
+                <i class="fas fa-eye"></i> Vue rapide
+              </button>
+            </div>
+
+            <div class="product-info">
+              <div class="rating">
+                <span *ngFor="let star of [1, 2, 3, 4, 5]">★</span>
+              </div>
+
+              <h3 class="product-name" (click)="goToProductDetail(produit)">{{produit.nom}}</h3>
+              <p class="product-type">{{produit.type}}</p>
+              <p class="product-unit" *ngIf="produit.unite">Unité : {{ produit.unite }}</p>
+
+              <div class="price-container">
+                <ng-container *ngIf="produit.en_promotion && produit.prix_promo != null; else normalPrice">
+                  <span class="current-price">{{ formatPrice(produit.prix_promo) }}</span>
+                  <span class="old-price">{{ formatPrice(produit.prix) }}</span>
+                </ng-container>
+                <ng-template #normalPrice>
+                  <span class="current-price">{{ formatPrice(produit.prix) }}</span>
+                </ng-template>
+              </div>
+
+              <div class="product-actions">
+                <button class="details-btn" type="button" [routerLink]="['/produit', produit.slug || produit.id]">
+                  <i class="fas fa-info-circle"></i> Détails
+                </button>
+                <button
+                  type="button"
+                  class="add-to-cart-btn add-btn-{{produit.id}}"
+                  (click)="addToCart(produit, 1)"
+                  [disabled]="isOutOfStock(produit.quantite)"
+                >
+                  <i class="fas fa-shopping-cart"></i>
+                  {{ isOutOfStock(produit.quantite) ? 'Rupture' : 'Ajouter' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!isLoading && filteredProduits.length === 0" class="empty-state">
+          <i class="fas fa-search fa-3x"></i>
+          <h4>Nous n'avons rien trouvé pour cette recherche</h4>
+          <p>Modifiez vos filtres ou élargissez votre recherche pour découvrir plus de tissus.</p>
+          <button class="btn-primary" (click)="resetFilters()">
+            Réinitialiser
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<!-- Modale de connexion lorsqu'on clique sur "Ajouter" sans être connecté -->
+<div class="login-prompt-overlay" *ngIf="showLoginPrompt">
+  <div class="login-prompt-modal">
+    <button type="button" class="login-prompt-close" (click)="closeLoginPrompt()">
+      &times;
+    </button>
+    <h3 class="login-prompt-title">Connexion requise</h3>
+    <p class="login-prompt-text">
+      Pour ajouter des articles à votre panier et finaliser vos achats, vous devez être connecté à votre compte Ahma‑Dile.
+    </p>
+    <div class="login-prompt-actions">
+      <button type="button" class="login-prompt-secondary" (click)="closeLoginPrompt()">
+        Continuer la visite
+      </button>
+      <button type="button" class="login-prompt-primary" (click)="goToLogin()">
+        Se connecter
+      </button>
+    </div>
+  </div>
+</div>
+
+<br>
+    <!-- Pagination Section -->
+    <div class="pagination" *ngIf="filteredProduits.length > 0">
+      <button
+        class="pagination-btn"
+        [class.disabled]="currentPage === 1"
+        (click)="prevPage()"
+        type="button"
+      >
+        &laquo; Précédent
+      </button>
+
+      <button
+        *ngFor="let p of pages"
+        class="pagination-btn"
+        [class.active]="p === currentPage"
+        type="button"
+        (click)="setPage(p)"
+      >
+        {{ p }}
+      </button>
+
+      <button
+        class="pagination-btn"
+        [class.disabled]="currentPage === totalPages"
+        (click)="nextPage()"
+        type="button"
+      >
+        Suivant &raquo;
+      </button>
+    </div>
+
+    <!-- Sélection de la semaine (carrousel horizontal) -->
+    <section class="weekly-section" *ngIf="filteredProduits.length > 0">
+      <div class="weekly-header">
+        <h2>Sélection de la semaine</h2>
+        <span class="weekly-subtitle">Quelques tissus et mercerie mis en avant pour vous inspirer.</span>
+      </div>
+
+      <div class="weekly-scroller">
+        <div
+          class="weekly-item"
+          *ngFor="let produit of filteredProduits | slice:0:10"
+          (click)="goToProductDetail(produit)">
+          <div class="weekly-image-wrapper">
+            <img
+              [src]="getImageUrl(produit.image)"
+              [alt]="produit.nom"
+              (error)="onImageError($event)"
+            />
+          </div>
+          <div class="weekly-info">
+            <h3 class="weekly-name">{{ produit.nom }}</h3>
+            <p class="weekly-price">{{ formatPrice(produit.prix) }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- Section CTA (Newsletter) -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Recevez nos nouveautés et promotions</h2>
+        <p>Pas de spam, uniquement l'essentiel pour vos futures créations.</p>
+        <form class="cta-form" (submit)="$event.preventDefault()">
+          <input type="email" placeholder="Votre adresse email" required />
+          <button type="submit" class="btn-primary">S'abonner</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Catégories (Existante) -->
+  <section class="categories-section" *ngIf="!isLoadingCategories">
+    <div class="container">
+      <h2>Nos collections</h2>
+      <p class="section-subtitle">Découvrez nos tissus par catégories</p>
+
+      <div class="categories-grid">
+        <div
+          *ngFor="let category of featuredCategories"
+          class="category-card"
+          [style.backgroundImage]="'url(' + (category.imageUrl || 'assets/images/default-category.jpg') + ')'"
+        >
+          <div class="category-content">
+            <h3>{{category.nom}}</h3>
+            <button
+              class="btn-category"
+              [routerLink]="['/categorie', category.slug || category.id]"
+            >
+              Explorer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

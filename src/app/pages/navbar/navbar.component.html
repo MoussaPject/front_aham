@@ -1,0 +1,235 @@
+<nav class="site-nav" [class.nav-fixed]="isNavFixed">
+  <div class="top-bar" *ngIf="showTopBar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 top-bar-inner">
+
+      <div class="top-bar-left hidden md:flex">
+        <a href="tel:+2250102030405" class="top-link">
+          <i class="fas fa-phone-alt mr-2"></i> +241 66 66 66 66
+        </a>
+      </div>
+
+      <div class="top-bar-center">
+        <span>Garantissez votre élégance avec Ahma-Dile <i class="fas fa-magic ml-1"></i></span>
+      </div>
+
+      <div class="top-bar-right">
+        <div class="top-bar-socials">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-whatsapp"></i></a>
+        </div>
+
+        <div class="divider ml-3"></div>
+
+        <button (click)="closeTopBar()" class="close-top-bar" aria-label="Fermer">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="nav-main">
+  <div class="nav-top">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="nav-top-inner">
+        
+        <div class="flex items-center gap-3">
+          <button class="mobile-toggle lg:hidden" (click)="toggleMobileMenu()" aria-label="Toggle menu">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          <a routerLink="/home" class="brand flex items-center gap-1">
+            <span class="brand-main">AHMA</span>
+            <span class="brand-dot">•</span>
+            <span class="brand-sub">DILE</span>
+          </a>
+        </div>
+
+        <form class="nav-search hidden lg:flex" (submit)="$event.preventDefault(); onSearchSubmit();">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            [(ngModel)]="navSearchTerm" 
+            (input)="onSearchInput($event)" 
+            name="mainSearch"
+            placeholder="Rechercher un produit..." 
+            autocomplete="off" />
+          <button type="submit" aria-label="Rechercher" class="search-btn">Rechercher</button>
+          <div class="search-dropdown" *ngIf="showSearchDropdown">
+            <div class="search-dropdown-inner">
+              <div *ngIf="isSearching" class="search-dropdown-item muted">
+                Recherche en cours...
+              </div>
+              <ng-container *ngIf="!isSearching">
+                <div *ngIf="searchResults.length === 0 && navSearchTerm.length >= 2" class="search-dropdown-item muted">
+                  Aucun produit trouvé
+                </div>
+                <button
+                  *ngFor="let produit of searchResults"
+                  type="button"
+                  class="search-dropdown-item"
+                  (click)="onSelectSearchResult(produit)">
+                  <div class="search-product-name">{{ produit.nom }}</div>
+                  <div class="search-product-meta">
+                    {{ produit.categorie?.nom || (produit.type | titlecase) }}
+                  </div>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </form>
+
+        <div class="nav-actions flex items-center gap-4">
+          
+          <ng-container *ngIf="isLoggedIn">
+            <div class="relative hidden lg:flex items-center gap-2 text-sm text-gray-700" #userDropdown>
+              <div class="user-avatar-wrapper">
+                <ng-container *ngIf="userImageUrl; else defaultAvatar">
+                  <img [src]="userImageUrl" alt="Avatar utilisateur" class="user-avatar" (error)="onAvatarError()" />
+                </ng-container>
+                <ng-template #defaultAvatar>
+                  <div class="user-avatar-fallback">
+                    {{ (userName || 'C').charAt(0) | uppercase }}
+                  </div>
+                </ng-template>
+              </div>
+              <button class="account-btn" (click)="toggleUserDropdown($event)">
+                <span>Bonjour, {{ userName || 'Client' }}</span>
+                <i class="fas fa-chevron-down text-xs"></i>
+              </button>
+        
+              <div *ngIf="isUserDropdownOpen" class="nav-dropdown">
+                <button (click)="goToProfile()" class="nav-dropdown-item">
+                  <i class="fas fa-user mr-2"></i> Profil
+                </button>
+                <button (click)="goToOrders()" class="nav-dropdown-item">
+                  <i class="fas fa-receipt mr-2"></i> Commandes
+                </button>
+                <button (click)="logout()" class="nav-dropdown-item danger">
+                  <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+                </button>
+              </div>
+            </div>
+        
+            <a class="icon-btn" routerLink="/panier" aria-label="Panier">
+              <i class="fas fa-shopping-bag"></i>
+              <span *ngIf="cartItemCount > 0" class="badge">{{ cartItemCount }}</span>
+            </a>
+          </ng-container>
+        
+          <div class="hidden lg:flex items-center gap-2" *ngIf="!isLoggedIn">
+            <button (click)="goToLogin()" class="btn-ghost">Connexion</button>
+            <button (click)="goToRegister()" class="btn-solid">Inscription</button>
+          </div>
+        
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom hidden lg:block">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="nav-bottom-inner flex justify-between items-center">
+        <div class="flex items-center gap-8">
+          <div class="nav-item-with-dropdown">
+            <a class="categories-btn" routerLink="/categories">
+              <i class="fas fa-bars"></i>
+              <span>Catégories</span>
+            </a>
+            <button type="button" class="dropdown-toggle-btn" (click)="toggleCategoriesDropdown($event)">
+              <i class="fas fa-chevron-down dropdown-caret" [class.open]="isCategoriesDropdownOpen"></i>
+            </button>
+            <div class="nav-dropdown-menu" *ngIf="isCategoriesDropdownOpen">
+              <a [routerLink]="'/categories'" class="nav-dropdown-link">Toutes les catégories</a>
+              <a [routerLink]="'/categories'" [queryParams]="{ type: 'tissu' }" class="nav-dropdown-link">Tissus</a>
+              <a [routerLink]="'/categories'" [queryParams]="{ type: 'mercerie' }" class="nav-dropdown-link">Mercerie</a>
+            </div>
+          </div>
+          <div class="nav-links flex gap-6">
+            <div class="nav-item-with-dropdown">
+              <a routerLink="/produits" routerLinkActive="active" class="nav-link-toggle">
+                <span>Produits</span>
+              </a>
+              <button type="button" class="dropdown-toggle-btn" (click)="toggleProductsDropdown($event)">
+                <i class="fas fa-chevron-down dropdown-caret" [class.open]="isProductsDropdownOpen"></i>
+              </button>
+              <div class="nav-dropdown-menu" *ngIf="isProductsDropdownOpen">
+                <a [routerLink]="'/produits'" class="nav-dropdown-link">Tous les produits</a>
+                <a [routerLink]="'/produits'" [queryParams]="{ type: 'tissu' }" class="nav-dropdown-link">Tissus</a>
+                <a [routerLink]="'/produits'" [queryParams]="{ type: 'mercerie' }" class="nav-dropdown-link">Mercerie</a>
+              </div>
+            </div>
+            <a routerLink="/nouveautes" routerLinkActive="active">Nouveautés</a>
+          </div>
+        </div>
+
+        <div class="nav-links">
+          <a routerLink="/contact" routerLinkActive="active" class="info-link">
+            <i class="fas fa-store-alt mr-2"></i> Boutique & Contact
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-menu lg:hidden" *ngIf="mobileMenuOpen">
+    <div class="p-4 space-y-3">
+      <form class="mobile-search mb-4" (submit)="$event.preventDefault(); onSearchSubmit();">
+        <input 
+          type="text" 
+          [(ngModel)]="navSearchTerm" 
+          (input)="onSearchInput($event)"
+          name="mobileSearch" 
+          placeholder="Rechercher..." />
+        <button type="submit"><i class="fas fa-search"></i></button>
+        <div class="search-dropdown mobile" *ngIf="showSearchDropdown">
+          <div class="search-dropdown-inner">
+            <div *ngIf="isSearching" class="search-dropdown-item muted">
+              Recherche en cours...
+            </div>
+            <ng-container *ngIf="!isSearching">
+              <div *ngIf="searchResults.length === 0 && navSearchTerm.length >= 2" class="search-dropdown-item muted">
+                Aucun produit trouvé
+              </div>
+              <button
+                *ngFor="let produit of searchResults"
+                type="button"
+                class="search-dropdown-item"
+                (click)="onSelectSearchResult(produit)">
+                <div class="search-product-name">{{ produit.nom }}</div>
+                <div class="search-product-meta">
+                  {{ produit.categorie?.nom || (produit.type | titlecase) }}
+                </div>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </form>
+
+      <a routerLink="/home" class="mobile-link" (click)="mobileMenuOpen = false">Accueil</a>
+      <a routerLink="/produits" class="mobile-link" (click)="mobileMenuOpen = false">Produits</a>
+      <a routerLink="/nouveautes" class="mobile-link" (click)="mobileMenuOpen = false">Nouveautés</a>
+      <a routerLink="/contact" class="mobile-link info" (click)="mobileMenuOpen = false">Boutique & Contact</a>
+
+      <hr class="my-2 border-gray-100" />
+
+      <ng-container *ngIf="isLoggedIn">
+        <a (click)="goToProfile()" class="mobile-link"><i class="fas fa-user mr-2"></i> Mon Profil</a>
+        <a routerLink="/panier" class="mobile-link flex justify-between" (click)="mobileMenuOpen = false">
+          <span><i class="fas fa-shopping-bag mr-2"></i> Panier</span>
+          <span class="badge-mobile">{{ cartItemCount }}</span>
+        </a>
+        <button (click)="logout()" class="w-full text-left p-3 text-red-500 font-bold">Déconnexion</button>
+      </ng-container>
+
+      <ng-container *ngIf="!isLoggedIn">
+        <button (click)="goToLogin()" class="w-full btn-ghost mb-2">Connexion</button>
+        <button (click)="goToRegister()" class="w-full btn-solid">Inscription</button>
+      </ng-container>
+    </div>
+  </div>
+</div>
+</nav>
