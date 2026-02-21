@@ -7,9 +7,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class CategorieService {
   private apiUrl = `${environment.apiBaseUrl}/categories`;
-  private storageUrl = environment.production 
-    ? 'https://api.ahmadileboutique.com/storage' 
-    : 'http://localhost:8000/storage';
+  private storageUrl = environment.storageUrl;
 
   constructor(private http: HttpClient) {}
 

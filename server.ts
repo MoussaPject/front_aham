@@ -65,9 +65,14 @@ function run(): void {
   const server = app();
   
   server.listen(port, () => {
-    const protocol = process.env['HTTPS'] === 'true' || process.env['NODE_ENV'] === 'production' ? 'https' : 'http';
+    const isProduction = process.env['NODE_ENV'] === 'production';
+    const isHttps = process.env['HTTPS'] === 'true' || isProduction;
+    const protocol = isHttps ? 'https' : 'http';
+    const apiBaseUrl = isProduction ? 'https://backaham-production.up.railway.app' : 'http://localhost:8000';
+    
     console.log(`Node Express server listening on ${protocol}://localhost:${port}`);
-    console.log(`Environment: ${process.env['NODE_ENV'] || 'development'}`);
+    console.log(`Environment: ${isProduction ? 'production' : 'development'}`);
+    console.log(`API Base URL: ${apiBaseUrl}`);
   });
 }
 
