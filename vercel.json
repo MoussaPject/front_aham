@@ -21,11 +21,6 @@
     "NODE_ENV": "production",
     "HTTPS": "true"
   },
-  "functions": {
-    "dist/front-end/server/main.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
