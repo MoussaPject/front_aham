@@ -12,7 +12,7 @@
      "dev:ssr": "ng run front-end:serve-ssr",
   "build:ssr": "ng build && ng run front-end:server",
   "serve:ssr": "node dist/front-end/server/main.js",
-  "vercel-build": "ng run front-end:vercel",
+  "vercel-build": "ng run front-end:vercel:production",
     "postbuild": "cp -r dist/front-end/browser/* . && cp -r dist/front-end/server/* ."
   },
   "private": true,
