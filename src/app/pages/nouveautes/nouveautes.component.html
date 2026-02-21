@@ -180,7 +180,7 @@
       <div class="relative h-64 rounded-3xl overflow-hidden group cursor-pointer bg-neutral-900">
         <ng-container *ngIf="derniersProduits.length > 0; else collection1Fallback">
           <img
-            [src]="derniersProduits[0].image ? 'http://127.0.0.1:8000/storage/' + derniersProduits[0].image : 'assets/images/no-image.jpg'"
+            [src]="derniersProduits[0].image ? getImageUrl(derniersProduits[0].image) : 'assets/images/no-image.jpg'"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </ng-container>
         <ng-template #collection1Fallback>
@@ -204,7 +204,7 @@
       <div class="relative h-64 rounded-3xl overflow-hidden group cursor-pointer bg-neutral-900">
         <ng-container *ngIf="derniersProduits.length > 1; else collection2Fallback">
           <img
-            [src]="derniersProduits[1].image ? 'http://127.0.0.1:8000/storage/' + derniersProduits[1].image : 'assets/images/no-image.jpg'"
+            [src]="derniersProduits[1].image ? getImageUrl(derniersProduits[1].image) : 'assets/images/no-image.jpg'"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </ng-container>
         <ng-template #collection2Fallback>
@@ -228,7 +228,7 @@
       <div class="relative h-64 rounded-3xl overflow-hidden group cursor-pointer bg-neutral-900">
         <ng-container *ngIf="derniersProduits.length > 2; else collection3Fallback">
           <img
-            [src]="derniersProduits[2].image ? 'http://127.0.0.1:8000/storage/' + derniersProduits[2].image : 'assets/images/no-image.jpg'"
+            [src]="derniersProduits[2].image ? getImageUrl(derniersProduits[2].image) : 'assets/images/no-image.jpg'"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </ng-container>
         <ng-template #collection3Fallback>

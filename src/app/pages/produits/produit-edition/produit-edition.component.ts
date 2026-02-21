@@ -4,12 +4,14 @@ import { ProduitService } from '../../../services/produit/produit.service';
 import { Categorie } from '../../../models/categorie';
 import { CategorieService } from '../../../services/categorie/categorie.service';
 import { forkJoin } from 'rxjs';
+import { ImageHelper } from '../../../utils/image-helper';
 
 @Component({
   selector: 'app-produit-edition',
   templateUrl: './produit-edition.component.html'
 })
 export class ProduitEditionComponent implements OnInit {
+  ImageHelper = ImageHelper;
   produit: any;
   selectedFiles: File[] = [];
   categories: Categorie[] = [];

@@ -4,6 +4,7 @@ import { Produit } from '../../../models/produit';
 import { Subscription } from 'rxjs';
 import { CommandeService } from '../../../services/commande/commande.service';
 import { Router } from '@angular/router';
+import { ImageHelper } from '../../../utils/image-helper';
 
 interface CartItem {
   id: number;
@@ -17,6 +18,8 @@ interface CartItem {
   styleUrls: ['./panier.component.css']
 })
 export class PanierComponent implements OnInit, OnDestroy {
+
+  ImageHelper = ImageHelper;
 
   panier: CartItem[] = [];
   total: number = 0;

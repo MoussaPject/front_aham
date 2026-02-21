@@ -145,7 +145,7 @@
                       <img
                         *ngIf="u.image; else userInitialAvatar"
                         class="w-full h-full object-cover"
-                        [src]="'http://127.0.0.1:8000/storage/' + u.image"
+                        [src]="ImageHelper.getStorageUrl(u.image)"
                         [alt]="'Photo de ' + u.name"
                         (error)="u.image = null"
                       />

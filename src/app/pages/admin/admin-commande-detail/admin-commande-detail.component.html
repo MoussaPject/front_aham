@@ -195,7 +195,7 @@
       >
         <img
           [src]="item.produit.image
-            ? 'http://127.0.0.1:8000/storage/' + item.produit.image
+            ? ImageHelper.getStorageUrl(item.produit.image)
             : 'assets/images/no-image.jpg'"
           class="w-20 h-20 object-cover rounded-lg border"
         />

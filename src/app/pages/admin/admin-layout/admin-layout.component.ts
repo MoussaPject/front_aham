@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth/auth.service';
+import { ImageHelper } from '../../../utils/image-helper';
 
 @Component({
   selector: 'app-admin-layout',
@@ -34,7 +35,7 @@ export class AdminLayoutComponent implements OnInit {
 
   get userImageUrl(): string | null {
     if (this.currentUser?.image) {
-      return `http://127.0.0.1:8000/storage/${this.currentUser.image}`;
+      return ImageHelper.getStorageUrl(this.currentUser.image);
     }
     return null;
   }

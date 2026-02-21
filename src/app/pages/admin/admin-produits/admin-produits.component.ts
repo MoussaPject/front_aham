@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Produit } from '../../../models/produit';
 import { ProduitService } from '../../../services/produit/produit.service';
+import { ImageHelper } from '../../../utils/image-helper';
 
 @Component({
   selector: 'app-admin-produits',
@@ -9,6 +10,7 @@ import { ProduitService } from '../../../services/produit/produit.service';
   styleUrls: ['./admin-produits.component.css'],
 })
 export class AdminProduitsComponent implements OnInit {
+  ImageHelper = ImageHelper;
   produits: Produit[] = [];
   isLoading = false;
   apiError: string | null = null;

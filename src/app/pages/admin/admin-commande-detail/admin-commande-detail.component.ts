@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Commande } from '../../../models/commande.model';
 import { CommandeService } from '../../../services/commande/commande.service';
+import { ImageHelper } from '../../../utils/image-helper';
 
 @Component({
   selector: 'app-admin-commande-detail',
@@ -9,6 +10,7 @@ import { CommandeService } from '../../../services/commande/commande.service';
   styleUrls: ['./admin-commande-detail.component.css'],
 })
 export class AdminCommandeDetailComponent implements OnInit {
+  ImageHelper = ImageHelper;
   commande: Commande | null = null;
   isLoading = false;
   apiError: string | null = null;

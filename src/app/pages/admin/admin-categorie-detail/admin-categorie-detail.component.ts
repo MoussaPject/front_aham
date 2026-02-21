@@ -4,6 +4,7 @@ import { Categorie } from '../../../models/categorie';
 import { Produit } from '../../../models/produit';
 import { CategorieService } from '../../../services/categorie/categorie.service';
 import { ProduitService } from '../../../services/produit/produit.service';
+import { ImageHelper } from '../../../utils/image-helper';
 
 @Component({
   selector: 'app-admin-categorie-detail',
@@ -11,6 +12,7 @@ import { ProduitService } from '../../../services/produit/produit.service';
   styleUrls: ['./admin-categorie-detail.component.css'],
 })
 export class AdminCategorieDetailComponent implements OnInit {
+  ImageHelper = ImageHelper;
   categorie: Categorie | null = null;
   produits: Produit[] = [];
   isLoading = false;

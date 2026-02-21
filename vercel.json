@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "name": "ahma-dile-boutique",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/front-end/browser"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "status": 200
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "HTTPS": "true"
+  },
+  "functions": {
+    "dist/front-end/server/main.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

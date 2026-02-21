@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environments';
+import { environment } from '../../../environments/environment';
 import { catchError } from 'rxjs/operators';
 import { handleError } from '../../utils/error-handler';
 import { Produit } from '../../models/produit';
@@ -36,7 +36,9 @@ export class HomeService {
     );
   }
   getProduitsRecents(): Observable<Produit[]> {
-  return this.http.get<Produit[]>('/api/produits/recents'); // ajuste l'URL selon ton backend
+  return this.http.get<Produit[]>(`${environment.apiBaseUrl}/produits/recents`).pipe(
+    catchError(handleError)
+  );
 }
 
 }

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommandeService } from '../../services/commande/commande.service';
 import { AvisService } from '../../services/Avis/avis-service.service';
 import { Commande, CommandeItem } from '../../models/commande.model';
+import { ImageHelper } from '../../utils/image-helper';
 
 @Component({
   selector: 'app-commande',
@@ -11,6 +12,7 @@ import { Commande, CommandeItem } from '../../models/commande.model';
   styleUrls: ['./commande.component.css']
 })
 export class CommandeComponent implements OnInit {
+  ImageHelper = ImageHelper;
   commande?: Commande;
   livraisonForm: FormGroup;
   isLoading = false;

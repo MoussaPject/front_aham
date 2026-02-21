@@ -27,7 +27,7 @@
             <div class="h-28 w-28 rounded-full overflow-hidden shadow-lg">
               <img
                 class="w-full h-full object-cover"
-                [src]="'http://127.0.0.1:8000/storage/' + user.image"
+                [src]="ImageHelper.getStorageUrl(user.image)"
                 [alt]="'Photo de ' + (user.name || 'utilisateur')"
               />
             </div>

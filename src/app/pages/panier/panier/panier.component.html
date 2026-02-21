@@ -24,7 +24,7 @@
         <div *ngFor="let item of panier; trackBy: trackByItemId" class="cart-item-card">
           <div class="item-image">
             <img
-              [src]="item.produit.image ? 'http://127.0.0.1:8000/storage/' + item.produit.image : 'assets/images/no-image.jpg'"
+              [src]="item.produit.image ? ImageHelper.getStorageUrl(item.produit.image) : 'assets/images/no-image.jpg'"
               [alt]="item.produit.nom"
               (error)="onImageError($event)"
             />

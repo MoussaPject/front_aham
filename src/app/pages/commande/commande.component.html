@@ -153,7 +153,7 @@
             <!-- Image -->
             <div class="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 border">
               <img
-                [src]="item.produit.image ? 'http://127.0.0.1:8000/storage/' + item.produit.image : 'assets/images/no-image.jpg'"
+                [src]="item.produit.image ? ImageHelper.getStorageUrl(item.produit.image) : 'assets/images/no-image.jpg'"
                 (error)="onImageError($event)"
                 class="w-full h-full object-cover"
               />

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
+import { ImageHelper } from '../../../utils/image-helper';
 
 @Component({
   selector: 'app-admin-profil',
@@ -48,7 +49,7 @@ export class AdminProfilComponent implements OnInit {
           adresse: user.adresse || '',
         });
         if (user.image) {
-          this.previewImageUrl = `http://127.0.0.1:8000/storage/${user.image}`;
+          this.previewImageUrl = ImageHelper.getStorageUrl(user.image);
         }
       },
       error: () => {

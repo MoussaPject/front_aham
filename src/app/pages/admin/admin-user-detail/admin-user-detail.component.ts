@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminUser, UserService } from '../../../services/user/user.service';
+import { ImageHelper } from '../../../utils/image-helper';
 
 @Component({
   selector: 'app-admin-user-detail',
@@ -8,6 +9,7 @@ import { AdminUser, UserService } from '../../../services/user/user.service';
   styleUrls: ['./admin-user-detail.component.css'],
 })
 export class AdminUserDetailComponent implements OnInit {
+  ImageHelper = ImageHelper;
   user: AdminUser | null = null;
   isLoading = false;
   apiError: string | null = null;

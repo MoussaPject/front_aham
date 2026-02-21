@@ -108,7 +108,7 @@
       <!-- Image -->
       <div class="relative h-44 bg-slate-100 overflow-hidden">
         <img
-          [src]="p.image ? 'http://127.0.0.1:8000/storage/' + p.image : 'assets/images/no-image.jpg'"
+          [src]="p.image ? ImageHelper.getStorageUrl(p.image) : 'assets/images/no-image.jpg'"
           [alt]="p.nom"
           class="w-full h-full object-cover"
         />

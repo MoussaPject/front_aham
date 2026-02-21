@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { SeoService } from '../../services/seo/seo.service';
+import { environment } from '../../../environments/environment';
+import { ImageHelper } from '../../utils/image-helper';
 
 interface Category {
   id: number;
@@ -86,10 +88,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Newsletter
   newsletterEmail = '';
 
-  // URL de base de votre API (Laravel)
-  private readonly API_URL = 'http://127.0.0.1:8000/api';
-  private readonly STORAGE_URL = 'http://127.0.0.1:8000/storage';
-
   constructor(private router: Router, private seoService: SeoService) {}
 
   ngOnInit(): void {
@@ -111,8 +109,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.error = null;
 
       const [categoriesResponse, productsResponse] = await Promise.all([
-        fetch(`${this.API_URL}/categories`),
-        fetch(`${this.API_URL}/produits`)
+        fetch(`${environment.apiBaseUrl}/categories`),
+        fetch(`${environment.apiBaseUrl}/produits`)
       ]);
 
       if (!categoriesResponse.ok || !productsResponse.ok) {
@@ -124,7 +122,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Enrichir les catégories avec une URL d'image complète (comme dans CategorieService)
       this.categories = this.categories.map((c: any) => ({
         ...c,
-        imageUrl: c.image ? `${this.STORAGE_URL}/${c.image}` : undefined,
+        imageUrl: c.image ? ImageHelper.getStorageUrl(c.image) : undefined,
       }));
 
       this.products = await productsResponse.json();
@@ -234,7 +232,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (typeof slide === 'string') {
         if (slide.startsWith('assets/')) return slide;
         if (slide.startsWith('http')) return slide;
-        return `${this.STORAGE_URL}/${slide}`;
+        return ImageHelper.getStorageUrl(slide);
     }
     return 'assets/images/no-image.jpg';
   }

@@ -1,0 +1,15 @@
+# Ignorer les fichiers non nécessaires pour Vercel
+node_modules
+.git
+.gitignore
+README.md
+.env
+.env.local
+.env.development
+.env.production
+src/
+tsconfig.json
+.angular/
+e2e/
+coverage/
+dist/front-end/server/main.js.map
